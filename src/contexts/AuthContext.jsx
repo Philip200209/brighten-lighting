@@ -98,7 +98,7 @@ export function AuthProvider({ children }) {
       } else if (activeUser.email?.toLowerCase() === adminEmail) {
         setProfile({ id: activeUser.id, email: activeUser.email, role: 'admin' });
       } else {
-        setProfile(null);
+        setProfile({ id: activeUser.id, email: activeUser.email, role: 'customer' });
       }
       
       toast.success('Logged in successfully');
@@ -113,17 +113,17 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const signup = async ({ username, email, password }) => {
+  const signup = async ({ username, email, password, role = 'customer' }) => {
     try {
       setLoading(true);
       setError(null);
-      const normalizedUsername = username.trim().toLowerCase();
+      const normalizedUsername = (username?.trim() || email.split('@')[0]).toLowerCase();
       const res = await authService.signup(email, password);
       const newUser = res?.user || res?.data?.user || null;
       if (!newUser) throw new Error('Failed to create user');
 
       // create profile row
-      await profilesService.createProfile({ id: newUser.id, username: normalizedUsername, email, role: 'admin' });
+      await profilesService.createProfile({ id: newUser.id, username: normalizedUsername, email, role });
 
       setUser(newUser);
       const p = await profilesService.getByUserId(newUser.id);

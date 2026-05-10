@@ -42,6 +42,12 @@ export function ProductCard({ product }) {
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
+        <Link
+          to={`/checkout/${product.id}`}
+          className="inline-flex items-center justify-center gap-2 text-sm font-medium bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-lg py-3 transition-colors"
+        >
+          Buy Now
+        </Link>
       </div>
     </div>
   );

@@ -1,8 +1,9 @@
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
-export function ProtectedRoute({ children }) {
+export function ProtectedRoute({ children, requireAdmin = true, redirectTo }) {
   const { user, loading, isAdmin } = useAuth();
+  const location = useLocation();
 
   if (loading) {
     return (
@@ -15,7 +16,13 @@ export function ProtectedRoute({ children }) {
     );
   }
 
-  if (!user || !isAdmin) {
+  if (!user) {
+    const fallback = redirectTo || (requireAdmin ? '/admin/login' : '/account/login');
+    const returnTo = `${location.pathname}${location.search}`;
+    return <Navigate to={`${fallback}?returnTo=${encodeURIComponent(returnTo)}`} replace />;
+  }
+
+  if (requireAdmin && !isAdmin) {
     return <Navigate to="/admin/login" replace />;
   }
 

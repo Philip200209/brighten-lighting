@@ -1,33 +1,30 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Lightbulb, Mail, User, Lock, Eye, EyeOff } from 'lucide-react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { Mail, Lock, Eye, EyeOff, Lightbulb } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
-export function Register() {
-  const [username, setUsername] = useState('');
+export function CustomerLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirm, setConfirm] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const { signup } = useAuth();
+  const { signin } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+  const returnTo = new URLSearchParams(location.search).get('returnTo') || '/';
 
-  const handleRegister = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError('');
-    if (!username.trim()) return setError('Username is required');
-    if (password.length < 8) return setError('Password must be at least 8 characters');
-    if (password !== confirm) return setError('Passwords do not match');
-
     setIsLoading(true);
+
     try {
-      await signup({ username: username.trim().toLowerCase(), email: email.trim(), password, role: 'admin' });
-      navigate('/admin');
+      await signin(email, password);
+      navigate(returnTo, { replace: true });
     } catch (err) {
-      setError(err.message || 'Failed to create account');
+      setError(err.message || 'Failed to sign in');
     } finally {
       setIsLoading(false);
     }
@@ -41,7 +38,7 @@ export function Register() {
             <Lightbulb className="w-8 h-8 text-gold animate-pulse" />
           </div>
           <h1 className="text-3xl font-serif text-white tracking-widest">BRIGHTEN</h1>
-          <p className="text-gold mt-2 uppercase tracking-widest text-sm">Admin Registration</p>
+          <p className="text-gold mt-2 uppercase tracking-widest text-sm">Customer Login</p>
         </div>
 
         <div className="glass-dark p-8 rounded-2xl border border-white/10 shadow-2xl">
@@ -51,22 +48,7 @@ export function Register() {
             </div>
           )}
 
-          <form onSubmit={handleRegister} className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-400">Username</label>
-              <div className="relative">
-                <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-                <input
-                  type="text"
-                  required
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  className="w-full bg-dark-lighter border border-white/10 rounded-lg py-3 pl-12 pr-4 text-white focus:outline-none focus:border-gold/50 transition-colors"
-                  placeholder="Choose a username"
-                />
-              </div>
-            </div>
-
+          <form onSubmit={handleLogin} className="space-y-6">
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-400">Email</label>
               <div className="relative">
@@ -77,7 +59,7 @@ export function Register() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-dark-lighter border border-white/10 rounded-lg py-3 pl-12 pr-4 text-white focus:outline-none focus:border-gold/50 transition-colors"
-                  placeholder="Enter your email"
+                  placeholder="you@example.com"
                 />
               </div>
             </div>
@@ -92,7 +74,7 @@ export function Register() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className="w-full bg-dark-lighter border border-white/10 rounded-lg py-3 pl-12 pr-10 text-white focus:outline-none focus:border-gold/50 transition-colors"
-                  placeholder="Create a secure password"
+                  placeholder="Enter your password"
                 />
                 <button
                   type="button"
@@ -104,41 +86,25 @@ export function Register() {
               </div>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-400">Confirm Password</label>
-              <input
-                type="password"
-                required
-                value={confirm}
-                onChange={(e) => setConfirm(e.target.value)}
-                className="w-full bg-dark-lighter border border-white/10 rounded-lg py-3 pl-4 pr-4 text-white focus:outline-none focus:border-gold/50 transition-colors"
-                placeholder="Confirm password"
-              />
-            </div>
-
             <button
               type="submit"
               disabled={isLoading}
               className="w-full bg-gold hover:bg-gold-light text-dark font-bold tracking-wider uppercase py-4 rounded-lg transition-all flex items-center justify-center gap-2 mt-4 disabled:opacity-50"
             >
-              {isLoading ? (
-                <>
-                  <span className="w-5 h-5 border-2 border-dark/30 border-t-dark rounded-full animate-spin"></span>
-                  Creating...
-                </>
-              ) : (
-                'Create Admin'
-              )}
+              {isLoading ? 'Logging in...' : 'Continue to Checkout'}
             </button>
           </form>
-        </div>
 
-        <p className="text-center text-gray-500 text-xs mt-8">
-          Admin accounts allow access to this portal. Ensure usernames are unique.
-        </p>
+          <div className="mt-6 pt-6 border-t border-white/10 flex items-center justify-between text-sm">
+            <Link to={`/account/register?returnTo=${encodeURIComponent(returnTo)}`} className="text-gold hover:text-gold-light transition-colors">
+              Create an account
+            </Link>
+            <Link to="/" className="text-gray-400 hover:text-white transition-colors">
+              Back to site
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
-
-export default Register;

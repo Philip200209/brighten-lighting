@@ -2,6 +2,7 @@ import axios from 'axios';
 
 const RESEND_API_KEY = import.meta.env.VITE_RESEND_API_KEY;
 const RECIPIENT_EMAIL = import.meta.env.VITE_RECIPIENT_EMAIL;
+const BUSINESS_FROM_EMAIL = import.meta.env.VITE_BUSINESS_FROM_EMAIL || 'Brighten Lighting <noreply@resend.dev>';
 
 /**
  * Send an email using Resend API
@@ -11,7 +12,7 @@ const RECIPIENT_EMAIL = import.meta.env.VITE_RECIPIENT_EMAIL;
  * @param {string} options.html - HTML content
  * @param {string} options.from - Sender email (default: noreply@resend.dev)
  */
-export async function sendEmail({ to, subject, html, from = 'noreply@resend.dev' }) {
+export async function sendEmail({ to, subject, html, from = BUSINESS_FROM_EMAIL }) {
   if (!RESEND_API_KEY) {
     console.warn('Resend API key not configured. Email not sent.');
     return null;
@@ -77,6 +78,7 @@ export async function sendInquiryNotification(inquiry) {
     to: RECIPIENT_EMAIL,
     subject: `New Inquiry: ${inquiry.name} - ${inquiry.subject || 'General Inquiry'}`,
     html,
+    from: BUSINESS_FROM_EMAIL,
   });
 }
 
@@ -129,6 +131,7 @@ export async function sendInquiryConfirmation(inquiry) {
     to: inquiry.email,
     subject: 'Thank You for Contacting Brighten Lighting',
     html,
+    from: BUSINESS_FROM_EMAIL,
   });
 }
 
@@ -161,5 +164,6 @@ export async function sendPaymentConfirmation(payment, customerEmail) {
     to: customerEmail,
     subject: `Payment Confirmed - Transaction #${payment.id}`,
     html,
+    from: BUSINESS_FROM_EMAIL,
   });
 }
