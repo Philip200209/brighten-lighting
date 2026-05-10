@@ -115,10 +115,12 @@ export const authService = {
 export const productsService = {
   // Get all products
   async getAll() {
+    // Only request the fields needed for listing to reduce payload size
     const { data, error } = await supabase
       .from('products')
-      .select('*')
-      .order('created_at', { ascending: false });
+      .select('id,name,price,category,stock,image_url,created_at,description')
+      .order('created_at', { ascending: false })
+      .range(0, 49); // paginate first 50 items
     if (error) {
       throw error;
     }
@@ -142,9 +144,10 @@ export const productsService = {
   async getByCategory(category) {
     const { data, error } = await supabase
       .from('products')
-      .select('*')
+      .select('id,name,price,category,stock,image_url,created_at,description')
       .eq('category', category)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .range(0, 49);
     if (error) {
       throw error;
     }
@@ -191,8 +194,9 @@ export const productsService = {
   async search(query) {
     const { data, error } = await supabase
       .from('products')
-      .select('*')
-      .or(`name.ilike.%${query}%,description.ilike.%${query}%`);
+      .select('id,name,price,category,stock,image_url,created_at,description')
+      .or(`name.ilike.%${query}%,description.ilike.%${query}%`)
+      .range(0, 49);
     if (error) {
       throw error;
     }

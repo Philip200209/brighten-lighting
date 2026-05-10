@@ -12,6 +12,7 @@ export function ProductCard({ product }) {
         <img
           src={imageSrc}
           alt={product.name}
+          loading="lazy"
           onError={(e) => {
             e.currentTarget.onerror = null;
             e.currentTarget.src = heroImage;
