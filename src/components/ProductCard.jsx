@@ -1,14 +1,21 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import heroImage from '../assets/hero.png';
 
 export function ProductCard({ product }) {
+  const imageSrc = product.image_url || product.image || heroImage;
+
   return (
     <div className="group relative bg-dark-light rounded-xl overflow-hidden border border-white/5 hover:border-gold/30 transition-all duration-500 hover:-translate-y-2">
       <div className="aspect-[4/5] overflow-hidden relative">
         <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors z-10" />
         <img
-          src={product.image}
+          src={imageSrc}
           alt={product.name}
+          onError={(e) => {
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = heroImage;
+          }}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
         />
         <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent z-20">
