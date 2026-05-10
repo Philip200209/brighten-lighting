@@ -15,8 +15,15 @@ export function MpesaPaymentForm({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [submittedPhone, setSubmittedPhone] = useState('');
 
   const paymentAmount = amount || product?.price;
+  const flowSteps = [
+    'Tap Pay with M-Pesa',
+    'Enter your phone number',
+    'Approve the prompt on your phone',
+    'Receive confirmation',
+  ];
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -41,7 +48,6 @@ export function MpesaPaymentForm({
         phoneNumber: formattedPhone,
         amount: paymentAmount,
         description,
-        callbackUrl: `${window.location.origin}/api/mpesa-callback`,
       });
 
       // Create payment record
@@ -53,8 +59,9 @@ export function MpesaPaymentForm({
         transaction_ref: response.CheckoutRequestID,
       });
 
+      setSubmittedPhone(formattedPhone);
       setSuccess(true);
-      toast.success('Payment prompt sent to your phone! Check your M-Pesa prompt.');
+      toast.success('Payment prompt sent. Check your phone and enter your M-Pesa PIN.');
       
       if (onSuccess) {
         onSuccess(payment);
@@ -85,10 +92,25 @@ export function MpesaPaymentForm({
         <div className="bg-green-500/10 border border-green-500/30 rounded-xl p-6 text-center">
           <CheckCircle className="w-12 h-12 text-green-400 mx-auto mb-3" />
           <h4 className="text-green-400 font-medium mb-2">Payment Initiated</h4>
-          <p className="text-green-300 text-sm">Check your phone for the M-Pesa prompt</p>
+          <p className="text-green-300 text-sm">Prompt sent to {submittedPhone || 'your phone'}. Approve it, then wait for confirmation.</p>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Flow guide */}
+          <div className="bg-dark-lighter border border-white/5 rounded-lg p-4">
+            <p className="text-sm font-medium text-gray-200 mb-3">M-Pesa payment flow</p>
+            <ol className="space-y-2 text-sm text-gray-400">
+              {flowSteps.map((step, index) => (
+                <li key={step} className="flex items-start gap-3">
+                  <span className="w-6 h-6 rounded-full bg-gold/15 text-gold flex items-center justify-center text-xs font-semibold shrink-0 mt-0.5">
+                    {index + 1}
+                  </span>
+                  <span>{step}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+
           {/* Payment Amount Display */}
           <div className="bg-gold/10 border border-gold/30 rounded-lg p-4">
             <p className="text-sm text-gray-400 mb-1">Amount to Pay</p>
@@ -133,25 +155,22 @@ export function MpesaPaymentForm({
             {isLoading ? (
               <>
                 <Loader className="w-5 h-5 animate-spin" />
-                Processing...
+                Sending prompt...
               </>
             ) : (
               <>
                 <Phone className="w-5 h-5" />
-                Pay with M-Pesa
+                Send M-Pesa Prompt
               </>
             )}
           </button>
 
           {/* Info Box */}
           <div className="bg-dark-lighter border border-white/5 rounded-lg p-4 text-xs text-gray-400 space-y-2">
-            <p className="font-medium text-gray-300">How it works:</p>
-            <ul className="list-disc list-inside space-y-1">
-              <li>Enter your M-Pesa phone number</li>
-              <li>A prompt will appear on your phone</li>
-              <li>Enter your M-Pesa PIN to confirm</li>
-              <li>You will receive a confirmation message</li>
-            </ul>
+            <p className="font-medium text-gray-300">What happens next:</p>
+            <p>1. We send the STK prompt to the phone number you enter.</p>
+            <p>2. You approve the request on your phone and enter your M-Pesa PIN.</p>
+            <p>3. You receive confirmation when the payment succeeds.</p>
           </div>
         </form>
       )}
