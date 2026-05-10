@@ -6,7 +6,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import toast from 'react-hot-toast';
 
 export function Contact() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -19,14 +19,15 @@ export function Contact() {
   const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
-    if (user?.email) {
+    // Only prefill when an authenticated customer (not admin) is present
+    if (user?.email && profile?.role === 'customer') {
       setFormData(prev => ({
         ...prev,
         email: prev.email || user.email,
         name: prev.name || user.user_metadata?.full_name || '',
       }));
     }
-  }, [user]);
+  }, [user, profile]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
