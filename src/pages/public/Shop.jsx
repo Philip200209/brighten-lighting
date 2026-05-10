@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { Search, SlidersHorizontal } from 'lucide-react';
 import { getProducts, CATEGORIES } from '../../data/mockData';
+import { productsService } from '../../lib/supabase';
 import { ProductCard } from '../../components/ProductCard';
 
 export function Shop() {
@@ -9,7 +10,17 @@ export function Shop() {
   const [activeCategory, setActiveCategory] = useState('All');
 
   useEffect(() => {
-    setProducts(getProducts());
+    const loadProducts = async () => {
+      try {
+        const dbProducts = await productsService.getAll();
+        setProducts(dbProducts);
+      } catch (error) {
+        console.error('Failed to load products from Supabase, using fallback data:', error);
+        setProducts(getProducts());
+      }
+    };
+
+    loadProducts();
   }, []);
 
   const filteredProducts = useMemo(() => {

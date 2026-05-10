@@ -2,16 +2,27 @@ import { Link } from 'react-router-dom';
 import { ArrowRight, Lightbulb, ShieldCheck, Zap } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { getProducts, CATEGORIES } from '../../data/mockData';
+import { productsService } from '../../lib/supabase';
 import { ProductCard } from '../../components/ProductCard';
 
 export function Home() {
   const [products, setProducts] = useState([]);
 
   useEffect(() => {
-    setProducts(getProducts());
+    const loadProducts = async () => {
+      try {
+        const dbProducts = await productsService.getAll();
+        setProducts(dbProducts);
+      } catch (error) {
+        console.error('Failed to load products from Supabase, using fallback data:', error);
+        setProducts(getProducts());
+      }
+    };
+
+    loadProducts();
   }, []);
 
-  const featuredProducts = products.filter(p => p.featured).slice(0, 3);
+  const featuredProducts = products.slice(0, 3);
 
   return (
     <div className="flex flex-col min-h-screen">
