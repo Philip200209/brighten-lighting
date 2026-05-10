@@ -1,5 +1,8 @@
 import { useState } from 'react';
 import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import { inquiriesService } from '../../lib/supabase';
+import { sendInquiryNotification, sendInquiryConfirmation } from '../../lib/emailService';
+import toast from 'react-hot-toast';
 
 export function Contact() {
   const [formData, setFormData] = useState({
@@ -13,26 +16,50 @@ export function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
     
-    // Simulate API call
-    setTimeout(() => {
-      // Save to localStorage to simulate DB
-      const inquiries = JSON.parse(localStorage.getItem('inquiries') || '[]');
-      inquiries.push({
-        id: Date.now().toString(),
-        ...formData,
-        date: new Date().toISOString(),
-        status: 'new'
+    try {
+      // Create inquiry in Supabase
+      const inquiry = await inquiriesService.create({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        message: formData.message,
+        subject: formData.subject,
+        product_id: null,
+        status: 'new',
       });
-      localStorage.setItem('inquiries', JSON.stringify(inquiries));
-      
-      setIsSubmitting(false);
+
+      // Send notification email to admin
+      try {
+        await sendInquiryNotification({
+          ...inquiry,
+          subject: formData.subject,
+        });
+      } catch (emailError) {
+        console.error('Error sending admin notification:', emailError);
+        // Don't fail the entire submission if email fails
+      }
+
+      // Send confirmation email to customer
+      try {
+        await sendInquiryConfirmation(inquiry);
+      } catch (emailError) {
+        console.error('Error sending customer confirmation:', emailError);
+        // Don't fail the entire submission if email fails
+      }
+
       setSubmitted(true);
       setFormData({ name: '', email: '', phone: '', subject: '', message: '' });
-    }, 1500);
+      toast.success('Inquiry sent successfully!');
+    } catch (error) {
+      console.error('Error submitting inquiry:', error);
+      toast.error(error.message || 'Failed to send inquiry. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleChange = (e) => {
@@ -190,7 +217,10 @@ export function Contact() {
                   className="w-full bg-gold hover:bg-gold-light text-dark font-bold tracking-wider uppercase py-4 rounded-lg transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? (
-                    <span className="w-5 h-5 border-2 border-dark/30 border-t-dark rounded-full animate-spin"></span>
+                    <>
+                      <span className="w-5 h-5 border-2 border-dark/30 border-t-dark rounded-full animate-spin"></span>
+                      Sending...
+                    </>
                   ) : (
                     <>
                       Send Message

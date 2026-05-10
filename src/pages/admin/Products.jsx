@@ -1,11 +1,26 @@
-import { useState, useRef, useEffect } from 'react';
-import { getProducts, saveProducts, CATEGORIES } from '../../data/mockData';
-import { Plus, Edit2, Trash2, Search, Upload, X } from 'lucide-react';
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { productsService } from '../../lib/supabase';
+import { Plus, Edit2, Trash2, Search, Upload, X, AlertCircle } from 'lucide-react';
+import toast from 'react-hot-toast';
+
+const CATEGORIES = [
+  'Pendant Lights',
+  'Ceiling Lights',
+  'Wall Lights',
+  'Floor Lights',
+  'Table Lamps',
+  'Outdoor Lights',
+  'Decorative Bulbs',
+  'Smart Lights',
+];
 
 export function Products() {
   const [products, setProducts] = useState([]);
   const [search, setSearch] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   
   // Form state
   const [formData, setFormData] = useState({
@@ -13,26 +28,39 @@ export function Products() {
     price: '',
     category: '',
     description: '',
-    featured: false,
+    image_url: '',
+    stock: 10,
   });
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef(null);
 
-  useEffect(() => {
-    setProducts(getProducts());
+  // Load products on mount
+  const loadProducts = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const data = await productsService.getAll();
+      setProducts(data);
+    } catch (error) {
+      console.error('Error loading products:', error);
+      toast.error('Failed to load products');
+    } finally {
+      setIsLoading(false);
+    }
   }, []);
 
-  const handleDelete = (id) => {
-    if (window.confirm("Are you sure you want to delete this product?")) {
-      const newProducts = products.filter(p => p.id !== id);
-      setProducts(newProducts);
-      saveProducts(newProducts);
-    }
-  };
+  useEffect(() => {
+    loadProducts();
+  }, [loadProducts]);
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (file) {
+      // Validate file size (max 5MB)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error('Image must be less than 5MB');
+        return;
+      }
+
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
@@ -41,34 +69,97 @@ export function Products() {
     }
   };
 
-  const handleSubmit = (e) => {
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      price: '',
+      category: '',
+      description: '',
+      image_url: '',
+      stock: 10,
+    });
+    setImagePreview(null);
+    setEditingId(null);
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.name || !formData.price || !formData.category || !imagePreview) {
-      alert("Please fill all required fields and upload an image.");
+    
+    if (!formData.name || !formData.price || !formData.category || !formData.description) {
+      toast.error('Please fill all required fields');
       return;
     }
 
-    const newProduct = {
-      id: Date.now().toString(),
-      name: formData.name,
-      price: Number(formData.price),
-      category: formData.category,
-      description: formData.description,
-      featured: formData.featured,
-      image: imagePreview,
-    };
+    if (!imagePreview && !editingId) {
+      toast.error('Please upload a product image');
+      return;
+    }
 
-    const newProducts = [newProduct, ...products];
-    setProducts(newProducts);
-    saveProducts(newProducts);
-    
-    // Reset form
-    setIsModalOpen(false);
-    setFormData({ name: '', price: '', category: '', description: '', featured: false });
-    setImagePreview(null);
+    setIsSubmitting(true);
+    try {
+      const productData = {
+        name: formData.name,
+        price: Number(formData.price),
+        category: formData.category,
+        description: formData.description,
+        image_url: imagePreview || formData.image_url,
+        stock: Number(formData.stock),
+      };
+
+      if (editingId) {
+        // Update product
+        await productsService.update(editingId, productData);
+        toast.success('Product updated successfully');
+      } else {
+        // Create product
+        await productsService.create(productData);
+        toast.success('Product added successfully');
+      }
+
+      await loadProducts();
+      setIsModalOpen(false);
+      resetForm();
+    } catch (error) {
+      console.error('Error saving product:', error);
+      toast.error(error.message || 'Failed to save product');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  const filteredProducts = products.filter(p => p.name.toLowerCase().includes(search.toLowerCase()));
+  const handleEdit = (product) => {
+    setFormData({
+      name: product.name,
+      price: product.price,
+      category: product.category,
+      description: product.description,
+      image_url: product.image_url,
+      stock: product.stock || 10,
+    });
+    setImagePreview(product.image_url);
+    setEditingId(product.id);
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Are you sure you want to delete this product?')) {
+      return;
+    }
+
+    try {
+      await productsService.delete(id);
+      toast.success('Product deleted successfully');
+      await loadProducts();
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      toast.error('Failed to delete product');
+    }
+  };
+
+  const filteredProducts = products.filter(p => 
+    p.name.toLowerCase().includes(search.toLowerCase()) ||
+    p.category.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <div className="space-y-6">
@@ -84,7 +175,10 @@ export function Products() {
           />
         </div>
         <button 
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {
+            resetForm();
+            setIsModalOpen(true);
+          }}
           className="bg-gold hover:bg-gold-light text-dark font-medium px-4 py-2.5 rounded-lg flex items-center gap-2 transition-colors shrink-0"
         >
           <Plus className="w-5 h-5" />
@@ -92,62 +186,88 @@ export function Products() {
         </button>
       </div>
 
-      <div className="bg-dark-lighter border border-white/5 rounded-2xl overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead className="bg-white/5 border-b border-white/5">
-              <tr>
-                <th className="p-4 text-sm font-medium text-gray-400">Product</th>
-                <th className="p-4 text-sm font-medium text-gray-400">Category</th>
-                <th className="p-4 text-sm font-medium text-gray-400">Price</th>
-                <th className="p-4 text-sm font-medium text-gray-400">Featured</th>
-                <th className="p-4 text-sm font-medium text-gray-400 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-white/5">
-              {filteredProducts.map(product => (
-                <tr key={product.id} className="hover:bg-white/5 transition-colors">
-                  <td className="p-4">
-                    <div className="flex items-center gap-4">
-                      <img src={product.image} alt={product.name} className="w-12 h-12 rounded-lg object-cover bg-dark" />
-                      <span className="text-white font-medium">{product.name}</span>
-                    </div>
-                  </td>
-                  <td className="p-4 text-gray-300">{product.category}</td>
-                  <td className="p-4 text-gold font-medium">KSh {product.price.toLocaleString()}</td>
-                  <td className="p-4 text-gray-300">{product.featured ? 'Yes' : 'No'}</td>
-                  <td className="p-4 text-right">
-                    <div className="flex justify-end gap-2">
-                      <button 
-                        onClick={() => handleDelete(product.id)}
-                        className="p-2 hover:bg-red-500/10 rounded-lg text-gray-400 hover:text-red-400 transition-colors"
-                        title="Delete Product"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {filteredProducts.length === 0 && (
-                <tr>
-                  <td colSpan="5" className="p-8 text-center text-gray-500">
-                    No products found. Add a new product to get started.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+      {isLoading ? (
+        <div className="text-center py-12">
+          <div className="w-8 h-8 border-2 border-gold/30 border-t-gold rounded-full animate-spin mx-auto mb-3"></div>
+          <p className="text-gray-400">Loading products...</p>
         </div>
-      </div>
+      ) : (
+        <div className="bg-dark-lighter border border-white/5 rounded-2xl overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left">
+              <thead className="bg-white/5 border-b border-white/5">
+                <tr>
+                  <th className="p-4 text-sm font-medium text-gray-400">Product</th>
+                  <th className="p-4 text-sm font-medium text-gray-400">Category</th>
+                  <th className="p-4 text-sm font-medium text-gray-400">Price</th>
+                  <th className="p-4 text-sm font-medium text-gray-400">Stock</th>
+                  <th className="p-4 text-sm font-medium text-gray-400 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-white/5">
+                {filteredProducts.map(product => (
+                  <tr key={product.id} className="hover:bg-white/5 transition-colors">
+                    <td className="p-4">
+                      <div className="flex items-center gap-4">
+                        <img 
+                          src={product.image_url} 
+                          alt={product.name} 
+                          className="w-12 h-12 rounded-lg object-cover bg-dark" 
+                        />
+                        <span className="text-white font-medium">{product.name}</span>
+                      </div>
+                    </td>
+                    <td className="p-4 text-gray-300">{product.category}</td>
+                    <td className="p-4 text-gold font-medium">KES {product.price.toLocaleString()}</td>
+                    <td className="p-4 text-gray-300">{product.stock}</td>
+                    <td className="p-4 text-right">
+                      <div className="flex justify-end gap-2">
+                        <button 
+                          onClick={() => handleEdit(product)}
+                          className="p-2 hover:bg-gold/10 rounded-lg text-gray-400 hover:text-gold transition-colors"
+                          title="Edit Product"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <button 
+                          onClick={() => handleDelete(product.id)}
+                          className="p-2 hover:bg-red-500/10 rounded-lg text-gray-400 hover:text-red-400 transition-colors"
+                          title="Delete Product"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+                {filteredProducts.length === 0 && (
+                  <tr>
+                    <td colSpan="5" className="p-8 text-center text-gray-500">
+                      {search ? 'No products found matching your search.' : 'No products yet. Add a new product to get started.'}
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
 
-      {/* Add Product Modal */}
+      {/* Product Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-dark-lighter border border-white/10 rounded-2xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-6">
-              <h3 className="text-2xl font-serif text-white">Add New Product</h3>
-              <button onClick={() => setIsModalOpen(false)} className="text-gray-400 hover:text-white p-2">
+              <h3 className="text-2xl font-serif text-white">
+                {editingId ? 'Edit Product' : 'Add New Product'}
+              </h3>
+              <button 
+                onClick={() => {
+                  setIsModalOpen(false);
+                  resetForm();
+                }}
+                className="text-gray-400 hover:text-white p-2"
+              >
                 <X className="w-6 h-6" />
               </button>
             </div>
@@ -156,80 +276,105 @@ export function Products() {
               <div className="grid grid-cols-2 gap-6">
                 
                 {/* Image Upload Area */}
-                 <div 
-                   className="col-span-2 md:col-span-1 border-2 border-dashed border-white/10 rounded-xl flex flex-col items-center justify-center h-48 text-gray-400 hover:border-gold/50 transition-colors cursor-pointer relative overflow-hidden bg-dark"
-                   onClick={() => fileInputRef.current?.click()}
-                 >
-                    {imagePreview ? (
-                      <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
-                    ) : (
-                      <>
-                        <Upload className="w-8 h-8 mb-2 text-gold" />
-                        <span className="text-sm text-center px-4">Click to upload from Gallery or PC</span>
-                      </>
-                    )}
-                    <input 
-                      type="file" 
-                      ref={fileInputRef} 
-                      onChange={handleImageUpload} 
-                      accept="image/*" 
-                      className="hidden" 
-                    />
-                 </div>
-                 
-                 {/* Form Fields */}
-                 <div className="col-span-2 md:col-span-1 space-y-4">
-                    <input 
-                      type="text" 
-                      required
-                      value={formData.name}
-                      onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      placeholder="Product Name" 
-                      className="w-full bg-dark border border-white/10 rounded-lg px-4 py-2 text-white focus:border-gold/50 focus:outline-none" 
-                    />
-                    <input 
-                      type="number" 
-                      required
-                      value={formData.price}
-                      onChange={(e) => setFormData({...formData, price: e.target.value})}
-                      placeholder="Price (KSh)" 
-                      className="w-full bg-dark border border-white/10 rounded-lg px-4 py-2 text-white focus:border-gold/50 focus:outline-none" 
-                    />
-                    <select 
-                      required
-                      value={formData.category}
-                      onChange={(e) => setFormData({...formData, category: e.target.value})}
-                      className="w-full bg-dark border border-white/10 rounded-lg px-4 py-2 text-white focus:border-gold/50 focus:outline-none"
-                    >
-                      <option value="">Select Category</option>
-                      {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                    </select>
-                    <label className="flex items-center gap-2 text-gray-300 cursor-pointer pt-2">
-                      <input 
-                        type="checkbox" 
-                        checked={formData.featured}
-                        onChange={(e) => setFormData({...formData, featured: e.target.checked})}
-                        className="w-4 h-4 accent-gold" 
-                      />
-                      Feature on Homepage
-                    </label>
-                 </div>
-                 
-                 <div className="col-span-2">
-                   <textarea 
-                     required
-                     value={formData.description}
-                     onChange={(e) => setFormData({...formData, description: e.target.value})}
-                     placeholder="Product Description" 
-                     rows={3} 
-                     className="w-full bg-dark border border-white/10 rounded-lg px-4 py-2 text-white resize-none focus:border-gold/50 focus:outline-none"
-                   ></textarea>
-                 </div>
+                <div 
+                  className="col-span-2 md:col-span-1 border-2 border-dashed border-white/10 rounded-xl flex flex-col items-center justify-center h-48 text-gray-400 hover:border-gold/50 transition-colors cursor-pointer relative overflow-hidden bg-dark"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  {imagePreview ? (
+                    <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                  ) : (
+                    <>
+                      <Upload className="w-8 h-8 mb-2 text-gold" />
+                      <span className="text-sm text-center px-4">Click to upload product image</span>
+                    </>
+                  )}
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    onChange={handleImageUpload} 
+                    accept="image/*" 
+                    className="hidden" 
+                  />
+                </div>
+                
+                {/* Form Fields */}
+                <div className="col-span-2 md:col-span-1 space-y-4">
+                  <input 
+                    type="text" 
+                    required
+                    value={formData.name}
+                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                    placeholder="Product Name" 
+                    className="w-full bg-dark border border-white/10 rounded-lg px-4 py-2 text-white focus:border-gold/50 focus:outline-none" 
+                  />
+                  <input 
+                    type="number" 
+                    required
+                    min="0"
+                    step="0.01"
+                    value={formData.price}
+                    onChange={(e) => setFormData({...formData, price: e.target.value})}
+                    placeholder="Price (KES)" 
+                    className="w-full bg-dark border border-white/10 rounded-lg px-4 py-2 text-white focus:border-gold/50 focus:outline-none" 
+                  />
+                  <select 
+                    required
+                    value={formData.category}
+                    onChange={(e) => setFormData({...formData, category: e.target.value})}
+                    className="w-full bg-dark border border-white/10 rounded-lg px-4 py-2 text-white focus:border-gold/50 focus:outline-none"
+                  >
+                    <option value="">Select Category</option>
+                    {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                  <input 
+                    type="number" 
+                    required
+                    min="0"
+                    value={formData.stock}
+                    onChange={(e) => setFormData({...formData, stock: e.target.value})}
+                    placeholder="Stock Quantity" 
+                    className="w-full bg-dark border border-white/10 rounded-lg px-4 py-2 text-white focus:border-gold/50 focus:outline-none" 
+                  />
+                </div>
+                
+                <div className="col-span-2">
+                  <textarea 
+                    required
+                    value={formData.description}
+                    onChange={(e) => setFormData({...formData, description: e.target.value})}
+                    placeholder="Product Description" 
+                    rows={3} 
+                    className="w-full bg-dark border border-white/10 rounded-lg px-4 py-2 text-white resize-none focus:border-gold/50 focus:outline-none"
+                  ></textarea>
+                </div>
               </div>
               
               <div className="flex justify-end gap-4 mt-8 pt-6 border-t border-white/10">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="px-6 py-2.5 rounded-lg text-gray-400 hover:text-white">Cancel</button>
-                <button type="submit" className="px-6 py-2.5 rounded-lg bg-gold hover:bg-gold-light text-dark font-medium transition-colors">Save Product</button>
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    resetForm();
+                  }}
+                  className="px-6 py-2.5 rounded-lg text-gray-400 hover:text-white"
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  className="px-6 py-2.5 rounded-lg bg-gold hover:bg-gold-light text-dark font-medium transition-colors disabled:opacity-50 flex items-center gap-2"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <span className="w-4 h-4 border-2 border-dark/30 border-t-dark rounded-full animate-spin"></span>
+                      Saving...
+                    </>
+                  ) : (
+                    editingId ? 'Update Product' : 'Save Product'
+                  )}
+                </button>
               </div>
             </form>
           </div>

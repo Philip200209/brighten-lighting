@@ -1,15 +1,11 @@
 import { Package, MessageSquare, TrendingUp, Users } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useMemo } from 'react';
 import { getProducts } from '../../data/mockData';
 
 export function Dashboard() {
-  const [products, setProducts] = useState([]);
+  const products = useMemo(() => getProducts(), []);
 
-  useEffect(() => {
-    setProducts(getProducts());
-  }, []);
-
-  const inquiries = JSON.parse(localStorage.getItem('inquiries') || '[]');
+  const inquiries = useMemo(() => JSON.parse(localStorage.getItem('inquiries') || '[]'), []);
   const newInquiries = inquiries.filter(i => i.status === 'new').length;
 
   const stats = [

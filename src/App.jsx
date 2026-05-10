@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { PublicLayout } from './layouts/PublicLayout';
 import { AdminLayout } from './layouts/AdminLayout';
+import { ProtectedRoute } from './components/ProtectedRoute';
 
 // Public Pages
 import { Home } from './pages/public/Home';
@@ -14,6 +15,9 @@ import { Dashboard } from './pages/admin/Dashboard';
 import { Products } from './pages/admin/Products';
 import { Inquiries } from './pages/admin/Inquiries';
 import { Settings } from './pages/admin/Settings';
+import { Register } from './pages/admin/Register';
+import { ForgotPassword } from './pages/admin/ForgotPassword';
+import { ResetPassword } from './pages/admin/ResetPassword';
 
 function App() {
   return (
@@ -29,12 +33,15 @@ function App() {
         </Route>
 
         {/* Admin Routes */}
+        <Route path="/admin/login" element={<Login />} />
+        <Route path="/admin/register" element={<Register />} />
+        <Route path="/admin/forgot-password" element={<ForgotPassword />} />
+        <Route path="/admin/reset-password" element={<ResetPassword />} />
         <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="login" element={<Login />} />
-          <Route path="products" element={<Products />} />
-          <Route path="inquiries" element={<Inquiries />} />
-          <Route path="settings" element={<Settings />} />
+          <Route index element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="products" element={<ProtectedRoute><Products /></ProtectedRoute>} />
+          <Route path="inquiries" element={<ProtectedRoute><Inquiries /></ProtectedRoute>} />
+          <Route path="settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
         </Route>
 
         {/* Fallback Route */}

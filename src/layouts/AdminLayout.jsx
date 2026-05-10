@@ -1,29 +1,22 @@
 import { useState, useEffect } from 'react';
-import { Outlet, Navigate, Link, useLocation, useNavigate } from 'react-router-dom';
+import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, Package, MessageSquare, LogOut, Lightbulb, Settings as SettingsIcon, Menu, X } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 import { cn } from '../lib/utils';
 
 export function AdminLayout() {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => localStorage.getItem('isAdminAuth') === 'true');
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { signout } = useAuth();
+  const pathname = location.pathname;
 
   useEffect(() => {
-    setIsAuthenticated(localStorage.getItem('isAdminAuth') === 'true');
     setIsMobileMenuOpen(false);
-  }, [location]);
+  }, [pathname]);
 
-  if (!isAuthenticated && location.pathname !== '/admin/login') {
-    return <Navigate to="/admin/login" replace />;
-  }
-
-  if (location.pathname === '/admin/login') {
-    return <Outlet />;
-  }
-
-  const handleLogout = () => {
-    localStorage.removeItem('isAdminAuth');
+  const handleLogout = async () => {
+    await signout();
     navigate('/admin/login');
   };
 
@@ -64,7 +57,7 @@ export function AdminLayout() {
         <nav className="flex-1 p-4 space-y-2">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = location.pathname === item.path;
+            const isActive = pathname === item.path;
             return (
               <Link
                 key={item.name}
@@ -102,7 +95,7 @@ export function AdminLayout() {
               <Menu className="w-6 h-6" />
             </button>
             <h2 className="text-white font-serif text-lg md:text-xl tracking-wide hidden sm:block">
-              {navItems.find(item => item.path === location.pathname)?.name || 'Admin'}
+              {navItems.find(item => item.path === pathname)?.name || 'Admin'}
             </h2>
           </div>
           <div className="flex items-center gap-4">

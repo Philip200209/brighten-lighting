@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Lock, Save, ShieldCheck } from 'lucide-react';
+import { authService } from '../../lib/supabase';
 
 export function Settings() {
   const [passwords, setPasswords] = useState({
-    current: '',
     new: '',
     confirm: ''
   });
@@ -20,7 +20,6 @@ export function Settings() {
     setIsSubmitting(true);
     setStatus({ type: '', message: '' });
 
-    // Validate
     if (passwords.new !== passwords.confirm) {
       setStatus({ type: 'error', message: 'New passwords do not match.' });
       setIsSubmitting(false);
@@ -33,22 +32,17 @@ export function Settings() {
       return;
     }
 
-    // Check current password
-    const actualCurrentPassword = localStorage.getItem('adminPassword') || 'password';
-    
-    setTimeout(() => {
-      if (passwords.current !== actualCurrentPassword) {
-        setStatus({ type: 'error', message: 'Current password is incorrect.' });
-        setIsSubmitting(false);
-        return;
-      }
-
-      // Save new password
-      localStorage.setItem('adminPassword', passwords.new);
-      setStatus({ type: 'success', message: 'Password has been successfully updated!' });
-      setPasswords({ current: '', new: '', confirm: '' });
+    authService.updatePassword(passwords.new)
+      .then(() => {
+        setStatus({ type: 'success', message: 'Password has been successfully updated!' });
+        setPasswords({ new: '', confirm: '' });
+      })
+      .catch((error) => {
+        setStatus({ type: 'error', message: error.message || 'Failed to update password.' });
+      })
+      .finally(() => {
       setIsSubmitting(false);
-    }, 1000); // Simulate network request
+      });
   };
 
   return (
@@ -79,22 +73,6 @@ export function Settings() {
         )}
 
         <form onSubmit={handlePasswordReset} className="space-y-6 max-w-md">
-          <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-400">Current Password</label>
-            <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
-              <input
-                type="password"
-                name="current"
-                required
-                value={passwords.current}
-                onChange={handleChange}
-                className="w-full bg-dark border border-white/10 rounded-lg py-3 pl-12 pr-4 text-white focus:outline-none focus:border-gold/50 transition-colors"
-                placeholder="Enter current password"
-              />
-            </div>
-          </div>
-
           <div className="space-y-2">
             <label className="text-sm font-medium text-gray-400">New Password</label>
             <div className="relative">

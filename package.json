@@ -7,15 +7,22 @@
     "dev": "vite --host",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "admin:provision": "node scripts/create_admin_with_service_role.js",
+    "admin:setup": "node scripts/admin_provision_prompt.js",
+    "admin:reset": "node scripts/send_reset_email.js"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "axios": "^1.7.2",
     "clsx": "^2.1.1",
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.14.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
+    "react-hot-toast": "^2.4.1",
     "react-router-dom": "^7.15.0",
+    "resend": "^3.0.0",
     "tailwind-merge": "^3.5.0"
   },
   "devDependencies": {
