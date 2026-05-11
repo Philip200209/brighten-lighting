@@ -3,9 +3,9 @@
     "build": {
       "command": "npm run build",
       "cwd": null,
-      "root_dir": null,
-      "output_dir": "dist"
+      "root_dir": null
     },
+    "output_dir": "dist",
     "env": {
       "production": {
         "name": null,
@@ -21,7 +21,6 @@
         "routes": [],
         "analytics_engine_datasets": []
       }
-    },
-    "output_dir": "dist"
+    }
   }
 }
