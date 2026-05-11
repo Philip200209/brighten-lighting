@@ -1,8 +1,0 @@
-{
-  "build": {
-    "command": "npm run build",
-    "cwd": null,
-    "root_dir": null
-  },
-  "output_dir": "dist"
-}

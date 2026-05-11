@@ -8,8 +8,8 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "workers:dev": "wrangler dev src/workers/index.js",
-    "workers:deploy": "wrangler deploy src/workers/index.js",
+    "workers:dev": "wrangler dev --config src/workers/wrangler.toml",
+    "workers:deploy": "wrangler deploy --config src/workers/wrangler.toml",
     "admin:provision": "node scripts/create_admin_with_service_role.js",
     "admin:setup": "node scripts/admin_provision_prompt.js",
     "admin:reset": "node scripts/send_reset_email.js"
