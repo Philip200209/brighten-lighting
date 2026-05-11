@@ -1,3 +1,16 @@
+// Get API base URL (use environment variable or default)
+const getApiBaseUrl = () => {
+  // For development with local Cloudflare Workers
+  if (import.meta.env.DEV && import.meta.env.VITE_WORKERS_URL) {
+    return import.meta.env.VITE_WORKERS_URL;
+  }
+  // For production, use same domain or VITE_API_BASE_URL
+  if (import.meta.env.VITE_API_BASE_URL) {
+    return import.meta.env.VITE_API_BASE_URL;
+  }
+  return '';
+};
+
 /**
  * Initiate M-Pesa Lipa Na M-Pesa Online payment through a server-side function
  * @param {Object} options - Payment options
@@ -6,7 +19,10 @@
  * @param {string} options.description - Payment description
  */
 export async function initiateMpesaPayment({ phoneNumber, amount, description }) {
-  const response = await fetch('/.netlify/functions/mpesa-initiate', {
+  const baseUrl = getApiBaseUrl();
+  const endpoint = `${baseUrl}/api/mpesa-initiate`;
+  
+  const response = await fetch(endpoint, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -32,7 +48,10 @@ export async function initiateMpesaPayment({ phoneNumber, amount, description })
  * @param {string} checkoutRequestId - The checkout request ID from initiateMpesaPayment
  */
 export async function queryMpesaTransactionStatus(checkoutRequestId) {
-  const response = await fetch('/.netlify/functions/mpesa-query', {
+  const baseUrl = getApiBaseUrl();
+  const endpoint = `${baseUrl}/api/mpesa-query`;
+  
+  const response = await fetch(endpoint, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
