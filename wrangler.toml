@@ -1,4 +1,4 @@
-name = "bright-mpesa-workers"
+name = "brighten-lighting"
 type = "service"
 account_id = "f7792bedfeff89399dc331b8efe37ba6"
 main = "src/workers/index.js"
