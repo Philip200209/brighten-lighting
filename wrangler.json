@@ -1,26 +1,8 @@
 {
-  "pages_build_configuration": {
-    "build": {
-      "command": "npm run build",
-      "cwd": null,
-      "root_dir": null
-    },
-    "output_dir": "dist",
-    "env": {
-      "production": {
-        "name": null,
-        "kv_namespace_bindings": [],
-        "vars": {},
-        "routes": [],
-        "analytics_engine_datasets": []
-      },
-      "preview": {
-        "name": null,
-        "kv_namespace_bindings": [],
-        "vars": {},
-        "routes": [],
-        "analytics_engine_datasets": []
-      }
-    }
-  }
+  "build": {
+    "command": "npm run build",
+    "cwd": null,
+    "root_dir": null
+  },
+  "output_dir": "dist"
 }
