@@ -337,15 +337,21 @@ export function Products() {
                   />
                 </div>
                 
-                <div className="col-span-2">
+                <div className="col-span-2 space-y-2">
+                  <label className="block text-sm font-medium text-gray-300">
+                    Product Overview
+                  </label>
                   <textarea 
                     required
                     value={formData.description}
                     onChange={(e) => setFormData({...formData, description: e.target.value})}
-                    placeholder="Product Description" 
-                    rows={3} 
-                    className="w-full bg-dark border border-white/10 rounded-lg px-4 py-2 text-white resize-none focus:border-gold/50 focus:outline-none"
+                    placeholder="Write the overview customers will see on the product page"
+                    rows={5} 
+                    className="w-full bg-dark border border-white/10 rounded-lg px-4 py-3 text-white resize-none focus:border-gold/50 focus:outline-none"
                   ></textarea>
+                  <p className="text-xs text-gray-500">
+                    This content appears on the public product page and in search results.
+                  </p>
                 </div>
               </div>
               
