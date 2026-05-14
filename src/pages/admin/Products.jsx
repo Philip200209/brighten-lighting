@@ -193,7 +193,7 @@ export function Products() {
         </div>
       ) : (
         <div className="bg-dark-lighter border border-white/5 rounded-2xl overflow-hidden">
-          <div className="overflow-x-auto">
+          <div className="responsive-scroll overflow-x-auto stacked-table">
             <table className="w-full text-left">
               <thead className="bg-white/5 border-b border-white/5">
                 <tr>
@@ -207,7 +207,7 @@ export function Products() {
               <tbody className="divide-y divide-white/5">
                 {filteredProducts.map(product => (
                   <tr key={product.id} className="hover:bg-white/5 transition-colors">
-                    <td className="p-4">
+                    <td className="p-4" data-label="Product">
                       <div className="flex items-center gap-4">
                         <img 
                           src={product.image_url} 
@@ -217,10 +217,10 @@ export function Products() {
                         <span className="text-white font-medium">{product.name}</span>
                       </div>
                     </td>
-                    <td className="p-4 text-gray-300">{product.category}</td>
-                    <td className="p-4 text-gold font-medium">KES {product.price.toLocaleString()}</td>
-                    <td className="p-4 text-gray-300">{product.stock}</td>
-                    <td className="p-4 text-right">
+                    <td className="p-4 text-gray-300" data-label="Category">{product.category}</td>
+                    <td className="p-4 text-gold font-medium" data-label="Price">KES {product.price.toLocaleString()}</td>
+                    <td className="p-4 text-gray-300" data-label="Stock">{product.stock}</td>
+                    <td className="p-4 text-right" data-label="Actions">
                       <div className="flex justify-end gap-2">
                         <button 
                           onClick={() => handleEdit(product)}
@@ -242,7 +242,7 @@ export function Products() {
                 ))}
                 {filteredProducts.length === 0 && (
                   <tr>
-                    <td colSpan="5" className="p-8 text-center text-gray-500">
+                    <td colSpan="5" className="p-8 text-center text-gray-500" data-label="No results">
                       {search ? 'No products found matching your search.' : 'No products yet. Add a new product to get started.'}
                     </td>
                   </tr>
@@ -256,7 +256,7 @@ export function Products() {
       {/* Product Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-dark-lighter border border-white/10 rounded-2xl w-full max-w-2xl p-6 max-h-[90vh] overflow-y-auto">
+          <div role="dialog" aria-modal="true" className="bg-dark-lighter border border-white/10 rounded-2xl w-full max-w-2xl p-4 sm:p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-2xl font-serif text-white">
                 {editingId ? 'Edit Product' : 'Add New Product'}
@@ -266,7 +266,8 @@ export function Products() {
                   setIsModalOpen(false);
                   resetForm();
                 }}
-                className="text-gray-400 hover:text-white p-2"
+                aria-label="Close dialog"
+                className="text-gray-400 hover:text-white p-3 rounded-full focus:outline-none focus:ring-2 focus:ring-gold"
               >
                 <X className="w-6 h-6" />
               </button>

@@ -55,6 +55,55 @@
   .box-glow {
     box-shadow: 0 0 30px rgba(245, 158, 11, 0.15);
   }
+
+  /* Responsive table utilities */
+  .responsive-scroll {
+    -webkit-overflow-scrolling: touch;
+    overflow-x: auto;
+  }
+
+  /* Stacked table on small screens: hides the header and shows labels via data attributes */
+  @media (max-width: 640px) {
+    .stacked-table thead {
+      display: none;
+    }
+
+    .stacked-table tbody tr {
+      display: block;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      margin-bottom: 0.75rem;
+      padding: 0.25rem 0;
+    }
+
+    .stacked-table tbody td {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem 0.5rem;
+      align-items: center;
+    }
+
+    .stacked-table tbody td::before {
+      content: attr(data-label) ":";
+      color: #9CA3AF; /* gray-400 */
+      font-weight: 600;
+      margin-right: 0.75rem;
+      flex: 0 0 auto;
+    }
+  }
+
+  /* Touch-friendly buttons/inputs on small screens */
+  @media (max-width: 640px) {
+    input, button, select, textarea {
+      @apply text-sm;
+      padding: 0.625rem 0.75rem;
+      border-radius: 0.5rem;
+    }
+
+    /* Slightly smaller headings on small screens */
+    h1, h2, h3 {
+      font-size: 1.125rem;
+    }
+  }
 }
 
 /* Custom Scrollbar */
