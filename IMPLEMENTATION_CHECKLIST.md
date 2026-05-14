@@ -78,7 +78,7 @@ Complete implementation guide for Brighten Lighting production deployment.
 - [ ] Go to SQL Editor and run database schema SQL
   - SQL provided in SETUP_GUIDE.md section 1.3
 - [ ] Create admin user in Authentication > Users
-  - Email: info@brighteninglighting.com
+  - Email: info@brightenlighting.com
   - Password: (your chosen password)
 - [ ] Verify connection
   - Run: npm run dev
@@ -91,7 +91,7 @@ Complete implementation guide for Brighten Lighting production deployment.
   - Save to VITE_RESEND_API_KEY in .env.local
 - [ ] Set recipient email
   - Save to VITE_RECIPIENT_EMAIL in .env.local
-  - Default: Info@brighteninglighting.co.ke
+  - Default: Info@brightenlighting.com
 - [ ] (Optional) Add custom email domain
   - Add DNS records as Resend guides
   - Verify domain ownership
@@ -128,12 +128,12 @@ VITE_SUPABASE_URL=https://xxxxx.supabase.co
 VITE_SUPABASE_ANON_KEY=eyJhbGc...
 
 # Admin Login (create user in Supabase Auth)
-VITE_ADMIN_EMAIL=info@brighteninglighting.com
+VITE_ADMIN_EMAIL=info@brightenlighting.com
 VITE_ADMIN_PASSWORD=your-secure-password-here
 
 # Email (from Resend dashboard)
 VITE_RESEND_API_KEY=re_xxxxx
-VITE_RECIPIENT_EMAIL=Info@brighteninglighting.co.ke
+VITE_RECIPIENT_EMAIL=Info@brightenlighting.com
 
 # M-Pesa (sandbox credentials provided, or get your own)
 VITE_MPESA_CONSUMER_KEY=xxxxxxx
@@ -284,7 +284,7 @@ VITE_APP_DOMAIN=brighten-lighting.netlify.app
 ### [ ] 4.5 Custom Domain Setup
 
 - [ ] In Netlify → Domain settings
-- [ ] Add custom domain: www.brighteninglighting.com
+- [ ] Add custom domain: www.brightenlighting.com
 - [ ] Note the nameservers provided
 - [ ] Go to domain registrar (GoDaddy, Namecheap, etc.)
 - [ ] Update nameservers to Netlify's
@@ -310,7 +310,7 @@ VITE_APP_DOMAIN=brighten-lighting.netlify.app
   - Add DNS records
   - Verify SPF/DKIM/DMARC
 - [ ] Test sending emails to real addresses
-- [ ] Setup email forwarding for Info@brighteninglighting.co.ke
+- [ ] Setup email forwarding for Info@brightenlighting.com
 
 ### [ ] 5.3 M-Pesa Production (When Ready)
 

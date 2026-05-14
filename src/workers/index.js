@@ -1,6 +1,7 @@
 // src/workers/index.js
 import { handleMpesaInitiate } from './mpesa-initiate.js';
 import { handleMpesaQuery } from './mpesa-query.js';
+import { handleMpesaCallback } from './mpesa-callback.js';
 
 export default {
   async fetch(request, env, context) {
@@ -30,6 +31,10 @@ export default {
       const response = await handleMpesaQuery(request, env);
       response.headers.set('Access-Control-Allow-Origin', corsHeaders['Access-Control-Allow-Origin']);
       return response;
+    }
+
+    if (path === '/api/mpesa-callback' || path === '/mpesa-callback') {
+      return handleMpesaCallback(request, env);
     }
 
     // 404 for unknown routes

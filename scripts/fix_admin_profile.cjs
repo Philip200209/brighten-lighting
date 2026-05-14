@@ -17,7 +17,7 @@ for (const line of env) {
 
 const SUPABASE_URL = vars.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = vars.VITE_SUPABASE_ANON_KEY;
-const ADMIN_EMAIL = (vars.VITE_ADMIN_EMAIL || 'info@brighteninglighting.com').toLowerCase();
+const ADMIN_EMAIL = (vars.VITE_ADMIN_EMAIL || 'info@brightenlighting.com').toLowerCase();
 
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   console.error('Supabase vars missing');

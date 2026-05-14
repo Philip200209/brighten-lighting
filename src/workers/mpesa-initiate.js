@@ -5,6 +5,8 @@ import {
   buildPassword,
   getAccessToken,
   requireConfig,
+  createPaymentRecord,
+  updatePaymentRecord,
   jsonResponse,
 } from './mpesa-shared.js';
 
@@ -16,7 +18,7 @@ export async function handleMpesaInitiate(request, env) {
   try {
     requireConfig(env);
 
-    const { phoneNumber, amount, description } = await request.json();
+    const { phoneNumber, amount, description, productId = null } = await request.json();
     const normalizedPhone = normalizePhoneNumber(phoneNumber);
     const safeAmount = Math.max(1, Math.round(Number(amount || 0)));
 
@@ -32,6 +34,14 @@ export async function handleMpesaInitiate(request, env) {
       return jsonResponse({ error: 'MPESA_CALLBACK_URL is not configured.' }, 500);
     }
 
+    const payment = await createPaymentRecord(env, {
+      phone_number: normalizedPhone,
+      amount: safeAmount,
+      product_id: productId || null,
+      status: 'pending',
+      notes: 'STK push initiated',
+    });
+
     const BASE_URL = env.MPESA_ENVIRONMENT === 'sandbox'
       ? 'https://sandbox.safaricom.co.ke'
       : 'https://api.safaricom.co.ke';
@@ -39,19 +49,22 @@ export async function handleMpesaInitiate(request, env) {
     const token = await getAccessToken(env);
     const timestamp = buildTimestamp();
     const password = buildPassword(timestamp, env.MPESA_BUSINESS_SHORT_CODE, env.MPESA_PASS_KEY);
+    const transactionType = env.MPESA_TRANSACTION_TYPE || 'CustomerPayBillOnline';
+    const accountReference = env.MPESA_ACCOUNT_REFERENCE || description || 'Payment';
+    const transactionDescription = env.MPESA_TRANSACTION_DESCRIPTION || description || 'M-Pesa Payment';
 
     const payload = {
       BusinessShortCode: env.MPESA_BUSINESS_SHORT_CODE,
       Password: password,
       Timestamp: timestamp,
-      TransactionType: 'CustomerPayBillOnline',
+      TransactionType: transactionType,
       Amount: safeAmount,
       PartyA: normalizedPhone,
       PartyB: env.MPESA_BUSINESS_SHORT_CODE,
       PhoneNumber: normalizedPhone,
       CallBackURL: env.MPESA_CALLBACK_URL,
-      AccountReference: description || 'Payment',
-      TransactionDesc: description || 'M-Pesa Payment',
+      AccountReference: accountReference,
+      TransactionDesc: transactionDescription,
     };
 
     const mpesaResponse = await fetch(
@@ -67,11 +80,33 @@ export async function handleMpesaInitiate(request, env) {
     );
 
     if (!mpesaResponse.ok) {
+      if (payment?.id) {
+        await updatePaymentRecord(env, payment.id, {
+          status: 'failed',
+          notes: 'Failed to initiate M-Pesa payment',
+        }).catch((updateError) => {
+          console.error('Failed to mark payment as failed:', updateError);
+        });
+      }
+
       return jsonResponse({ error: 'Failed to initiate payment' }, mpesaResponse.status);
     }
 
     const data = await mpesaResponse.json();
-    return jsonResponse(data);
+
+    if (payment?.id && data.CheckoutRequestID) {
+      await updatePaymentRecord(env, payment.id, {
+        transaction_ref: data.CheckoutRequestID,
+        notes: description || 'M-Pesa payment',
+      }).catch((updateError) => {
+        console.error('Failed to store CheckoutRequestID:', updateError);
+      });
+    }
+
+    return jsonResponse({
+      ...data,
+      payment,
+    });
   } catch (error) {
     console.error('Error initiating M-Pesa payment:', error);
     const statusCode = error.statusCode || 500;

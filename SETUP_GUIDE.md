@@ -98,12 +98,12 @@ VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key-here
 
 # Admin Credentials (for first setup, change these!)
-VITE_ADMIN_EMAIL=info@brighteninglighting.com
+VITE_ADMIN_EMAIL=info@brightenlighting.com
 VITE_ADMIN_PASSWORD=your-secure-password
 
 # Email Configuration
 VITE_RESEND_API_KEY=your-resend-api-key
-VITE_RECIPIENT_EMAIL=Info@brighteninglighting.co.ke
+VITE_RECIPIENT_EMAIL=Info@brightenlighting.com
 
 # M-Pesa Configuration
 VITE_MPESA_CONSUMER_KEY=your-mpesa-consumer-key
@@ -134,7 +134,7 @@ Use the Supabase dashboard to create your admin user:
 
 1. Go to **Authentication > Users**
 2. Click **Add user** (or invite)
-3. Create user with email: `info@brighteninglighting.com`
+3. Create user with email: `info@brightenlighting.com`
 4. Set password (use the one from `VITE_ADMIN_PASSWORD`)
 5. Confirm email
 
@@ -295,7 +295,7 @@ npm run build
 ### 9.3 Set Up Custom Domain
 
 1. In Netlify, go to **Domain settings**
-2. Add your custom domain: `www.brighteninglighting.com`
+2. Add your custom domain: `www.brightenlighting.com`
 3. Update your domain registrar's DNS to point to Netlify
 
 ## 10. Testing M-Pesa Payments
@@ -345,7 +345,7 @@ All M-Pesa payments are logged in the `payments` table:
 - [ ] Configure custom domain DNS
 - [ ] Enable Supabase backups
 - [ ] Set up SSL/TLS (auto-enabled on Netlify)
-- [ ] Configure email forwarding from Info@brighteninglighting.co.ke
+- [ ] Configure email forwarding from Info@brightenlighting.com
 - [ ] Test contact form and M-Pesa payments
 - [ ] Set up error tracking/monitoring
 - [ ] Create database backups

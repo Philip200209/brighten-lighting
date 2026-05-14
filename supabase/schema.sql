@@ -205,6 +205,7 @@ drop policy if exists inquiries_insert_public on public.inquiries;
 create policy inquiries_insert_public
 on public.inquiries
 for insert
+to anon, authenticated
 with check (true);
 
 drop policy if exists inquiries_select_admin on public.inquiries;

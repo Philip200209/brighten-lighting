@@ -39,7 +39,7 @@ Edit `.env.local` with your credentials. At minimum, get these from:
 
 1. In Supabase, go to **Authentication > Users**
 2. Click **Add user**
-3. Email: `info@brighteninglighting.com` (or your email from `VITE_ADMIN_EMAIL`)
+3. Email: `info@brightenlighting.com` (or your email from `VITE_ADMIN_EMAIL`)
 4. Password: (same as `VITE_ADMIN_PASSWORD` in `.env.local`)
 5. Click **Send invite**
 

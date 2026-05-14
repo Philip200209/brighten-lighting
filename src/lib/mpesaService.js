@@ -17,8 +17,9 @@ const getApiBaseUrl = () => {
  * @param {string} options.phoneNumber - Customer phone number (254XXXXXXXXX format)
  * @param {number} options.amount - Amount in KES
  * @param {string} options.description - Payment description
+ * @param {number|string|null} options.productId - Optional product ID to attach to the payment
  */
-export async function initiateMpesaPayment({ phoneNumber, amount, description }) {
+export async function initiateMpesaPayment({ phoneNumber, amount, description, productId = null }) {
   const baseUrl = getApiBaseUrl();
   const endpoint = `${baseUrl}/api/mpesa-initiate`;
   
@@ -31,6 +32,7 @@ export async function initiateMpesaPayment({ phoneNumber, amount, description })
       phoneNumber,
       amount,
       description,
+      productId,
     }),
   });
 

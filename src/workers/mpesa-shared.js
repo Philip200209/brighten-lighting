@@ -58,6 +58,86 @@ export function requireConfig(env) {
   }
 }
 
+function requireSupabaseConfig(env) {
+  if (!env.SUPABASE_URL || !env.SUPABASE_SERVICE_ROLE_KEY) {
+    throw new Error('Supabase server credentials are not configured');
+  }
+}
+
+async function supabaseRequest(env, path, { method = 'POST', body }) {
+  requireSupabaseConfig(env);
+
+  const response = await fetch(`${env.SUPABASE_URL}${path}`, {
+    method,
+    headers: {
+      apikey: env.SUPABASE_SERVICE_ROLE_KEY,
+      Authorization: `Bearer ${env.SUPABASE_SERVICE_ROLE_KEY}`,
+      'Content-Type': 'application/json',
+      Prefer: 'return=representation',
+    },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text().catch(() => '');
+    const error = new Error(errorText || `Supabase request failed with status ${response.status}`);
+    error.statusCode = response.status;
+    throw error;
+  }
+
+  return response.json();
+}
+
+export async function createPaymentRecord(env, payment) {
+  const rows = await supabaseRequest(env, '/rest/v1/payments?select=*', {
+    body: [payment],
+  });
+
+  return Array.isArray(rows) ? rows[0] : null;
+}
+
+export async function updatePaymentRecord(env, id, updates) {
+  const rows = await supabaseRequest(env, `/rest/v1/payments?id=eq.${id}&select=*`, {
+    method: 'PATCH',
+    body: updates,
+  });
+
+  return Array.isArray(rows) ? rows[0] : null;
+}
+
+export async function getPaymentByTransactionRef(env, transactionRef) {
+  const rows = await supabaseRequest(env, `/rest/v1/payments?transaction_ref=eq.${encodeURIComponent(transactionRef)}&select=*`, {
+    method: 'GET',
+  });
+
+  return Array.isArray(rows) ? rows[0] : null;
+}
+
+export function parseMpesaCallback(callbackData) {
+  const body = callbackData?.Body?.stkCallback;
+
+  if (!body) {
+    throw new Error('Invalid callback data format');
+  }
+
+  const metadata = {};
+  for (const item of body.CallbackMetadata?.Item || []) {
+    metadata[item.Name] = item.Value;
+  }
+
+  return {
+    success: body.ResultCode === 0,
+    resultCode: body.ResultCode,
+    resultDesc: body.ResultDesc,
+    checkoutRequestId: body.CheckoutRequestID,
+    merchantRequestId: body.MerchantRequestID,
+    mpesaReceiptNumber: metadata.MpesaReceiptNumber,
+    transactionDate: metadata.TransactionDate,
+    phoneNumber: metadata.PhoneNumber,
+    amount: metadata.Amount,
+  };
+}
+
 export function jsonResponse(data, status = 200, headers = {}) {
   return new Response(JSON.stringify(data), {
     status,

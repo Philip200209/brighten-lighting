@@ -249,7 +249,7 @@ npm run build
 4. Deploy!
 
 ### Custom Domain
-- Domain: www.brighteninglighting.com
+- Domain: www.brightenlighting.com
 - DNS: Point to Netlify
 - SSL: Auto-enabled
 
@@ -360,7 +360,7 @@ A: Shop page → Click product → Pay with M-Pesa button
 A: /admin/login → Inquiries → View all customer messages
 
 **Q: How do I get notified about inquiries?**  
-A: Automatic emails to Info@brighteninglighting.co.ke (configurable)
+A: Automatic emails to Info@brightenlighting.com (configurable)
 
 **Q: Can I use a custom domain?**  
 A: Yes! Just update DNS and add to Netlify

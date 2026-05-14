@@ -421,7 +421,7 @@ USING (true);
 -- Admin only for payments
 CREATE POLICY "Admin access to payments"
 ON payments
-USING (auth.jwt() ->> 'email' = 'info@brighteninglighting.com');
+USING (auth.jwt() ->> 'email' = 'info@brightenlighting.com');
 ```
 
 ---

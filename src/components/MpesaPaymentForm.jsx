@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Phone, AlertCircle, CheckCircle, Loader } from 'lucide-react';
 import { initiateMpesaPayment, isValidMpesaPhoneNumber, formatPhoneNumber } from '../lib/mpesaService';
-import { paymentsService } from '../lib/supabase';
 import toast from 'react-hot-toast';
 
 export function MpesaPaymentForm({ 
@@ -48,15 +47,7 @@ export function MpesaPaymentForm({
         phoneNumber: formattedPhone,
         amount: paymentAmount,
         description,
-      });
-
-      // Create payment record
-      const payment = await paymentsService.create({
-        phone_number: formattedPhone,
-        amount: paymentAmount,
-        product_id: product?.id || null,
-        status: 'pending',
-        transaction_ref: response.CheckoutRequestID,
+        productId: product?.id || null,
       });
 
       setSubmittedPhone(formattedPhone);
@@ -64,7 +55,7 @@ export function MpesaPaymentForm({
       toast.success('Payment prompt sent. Check your phone and enter your M-Pesa PIN.');
       
       if (onSuccess) {
-        onSuccess(payment);
+        onSuccess(response.payment || response);
       }
 
       // Reset form after 3 seconds

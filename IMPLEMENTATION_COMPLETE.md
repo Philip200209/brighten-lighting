@@ -87,7 +87,7 @@ The Brighten Lighting React + Vite + Tailwind CSS project has been successfully 
 - Email/password authentication
 - Supabase Auth integration
 - Protected admin dashboard
-- Owner-only access (email: admin@brighteninglighting.com)
+   - Owner-only access (email: Info@brightenlighting.com)
 - Password reset functionality
 - Secure session management
 - Auto-login on refresh
@@ -412,9 +412,8 @@ await paymentsService.updateStatus(paymentId, 'completed', { mpesa_receipt_numbe
 
 ## 📞 Support Contacts
 
-**Brighten Lighting Business**
 - Phone: 0722339377
-- Email: Info@brighteninglighting.co.ke
+- Email: Info@brightenlighting.com
 - Location: Eldoret City, Kenya
 - Website: https://brighten-lighting.netlify.app
 

@@ -23,7 +23,7 @@
 - Role-based access control
 
 ### 3. ✅ Email Notifications
-- Automatic inquiry notifications to Info@brighteninglighting.co.ke
+- Automatic inquiry notifications to Info@brightenlighting.com
 - Customer confirmation emails
 - Payment receipts
 - Powered by Resend API
@@ -45,7 +45,7 @@
 - Breadcrumb navigation schemas
 
 ### 6. ✅ Custom Domain Ready
-- Configured for www.brighteninglighting.com
+- Configured for www.brightenlighting.com
 - Netlify deployment ready
 - SSL/TLS auto-enabled
 - Environment-specific configuration
@@ -155,12 +155,12 @@ VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key
 
 # Authentication
-VITE_ADMIN_EMAIL=info@brighteninglighting.com
+VITE_ADMIN_EMAIL=info@brightenlighting.com
 VITE_ADMIN_PASSWORD=your-secure-password
 
 # Email
 VITE_RESEND_API_KEY=your-resend-api-key
-VITE_RECIPIENT_EMAIL=Info@brighteninglighting.co.ke
+VITE_RECIPIENT_EMAIL=Info@brightenlighting.com
 
 # M-Pesa
 VITE_MPESA_CONSUMER_KEY=your-consumer-key
@@ -192,7 +192,7 @@ App will be available at `http://localhost:5173`
 ### 5. Test Features
 
 **Admin Login:** `/admin/login`
-- Email: `info@brighteninglighting.com`
+-- Email: `info@brightenlighting.com`
 - Password: (from `.env.local`)
 
 **Customer Contact:** `/contact`
@@ -275,7 +275,7 @@ Or use Netlify UI:
 
 ### 3. Custom Domain
 
-1. In Netlify settings, add domain: `www.brighteninglighting.com`
+1. In Netlify settings, add domain: `www.brightenlighting.com`
 2. Update DNS at your registrar to point to Netlify nameservers
 
 ## 📧 Email Configuration
@@ -420,7 +420,7 @@ Or use Netlify UI:
 ## 📞 Support
 
 - **Phone**: 0722339377
-- **Email**: Info@brighteninglighting.co.ke
+- **Email**: Info@brightenlighting.com
 - **Location**: Eldoret City, Kenya
 - **Website**: https://brighten-lighting.netlify.app
 

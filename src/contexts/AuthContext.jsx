@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
-  const adminEmail = (import.meta.env.VITE_ADMIN_EMAIL || 'info@brighteninglighting.com').toLowerCase();
+  const adminEmail = (import.meta.env.VITE_ADMIN_EMAIL || 'info@brightenlighting.com').toLowerCase();
   const [user, setUser] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);

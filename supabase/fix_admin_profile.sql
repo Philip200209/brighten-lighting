@@ -10,7 +10,7 @@ select
   email,
   'admin'
 from auth.users
-where email = 'info@brighteninglighting.com'
+where email = 'info@brightenlighting.com'
   and not exists (
     select 1 from public.profiles p where p.id = auth.users.id
   );
@@ -18,9 +18,9 @@ where email = 'info@brighteninglighting.com'
 -- Step 2: Ensure profile has admin role
 update public.profiles
 set role = 'admin'
-where email = 'info@brighteninglighting.com'
+where email = 'info@brightenlighting.com'
   and role != 'admin';
 
 -- Verify
 select id, username, email, role, created_at from public.profiles
-where email = 'info@brighteninglighting.com';
+where email = 'info@brightenlighting.com';

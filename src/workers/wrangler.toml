@@ -13,9 +13,21 @@ name = "bright-mpesa-workers-production"
 # Variables (available in env context)
 [vars]
 MPESA_ENVIRONMENT = "sandbox"
+MPESA_TRANSACTION_TYPE = "CustomerPayBillOnline"
+MPESA_ACCOUNT_REFERENCE = "Brighten Lighting"
+MPESA_TRANSACTION_DESCRIPTION = "Payment for Brighten Lighting"
+SUPABASE_URL = "https://beojsdnwcsyygmlkoufe.supabase.co"
+MPESA_CALLBACK_URL = "https://brighten-lighting.philipkiprop.workers.dev/api/mpesa-callback"
+
+# Required for server-side payment row creation in Supabase:
+# SUPABASE_URL
+# SUPABASE_SERVICE_ROLE_KEY
 
 [env.production.vars]
 MPESA_ENVIRONMENT = "production"
+MPESA_TRANSACTION_TYPE = "CustomerPayBillOnline"
+MPESA_ACCOUNT_REFERENCE = "Brighten Lighting"
+MPESA_TRANSACTION_DESCRIPTION = "Payment for Brighten Lighting"
 
 # Secrets (set via: wrangler secret put MPESA_CONSUMER_KEY)
 # MPESA_CONSUMER_KEY

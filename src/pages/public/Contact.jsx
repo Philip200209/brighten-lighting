@@ -122,7 +122,7 @@ export function Contact() {
                   </div>
                   <div>
                     <h4 className="text-white font-medium mb-1">Email Address</h4>
-                    <p className="text-gray-400">Info@brighteninglighting.co.ke</p>
+                    <p className="text-gray-400">Info@brightenlighting.com</p>
                   </div>
                 </div>
               </div>
