@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const RESEND_API_KEY = import.meta.env.VITE_RESEND_API_KEY;
-const RECIPIENT_EMAIL = import.meta.env.VITE_RECIPIENT_EMAIL;
+const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL || import.meta.env.VITE_RECIPIENT_EMAIL;
 const BUSINESS_FROM_EMAIL = import.meta.env.VITE_BUSINESS_FROM_EMAIL || 'Brighten Lighting <noreply@resend.dev>';
 
 /**
@@ -43,7 +43,7 @@ export async function sendEmail({ to, subject, html, from = BUSINESS_FROM_EMAIL 
 }
 
 /**
- * Send an inquiry notification email
+ * Send an inquiry notification email to the admin
  */
 export async function sendInquiryNotification(inquiry) {
   const html = `
@@ -75,7 +75,7 @@ export async function sendInquiryNotification(inquiry) {
   `;
 
   return sendEmail({
-    to: RECIPIENT_EMAIL,
+    to: ADMIN_EMAIL,
     subject: `New Inquiry: ${inquiry.name} - ${inquiry.subject || 'General Inquiry'}`,
     html,
     from: BUSINESS_FROM_EMAIL,

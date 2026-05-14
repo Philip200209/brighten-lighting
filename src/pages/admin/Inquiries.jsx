@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { inquiriesService } from '../../lib/supabase';
+import { supabase, inquiriesService } from '../../lib/supabase';
 import { Mail, Phone, Calendar, Trash2, CheckCircle, AlertCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -23,6 +23,25 @@ export function Inquiries() {
 
   useEffect(() => {
     loadInquiries();
+
+    // Subscribe to realtime changes for inquiries so admin view updates live
+    const channel = supabase
+      .channel('public:inquiries')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'inquiries' }, (payload) => {
+        setInquiries((prev) => [payload.new, ...prev]);
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'inquiries' }, (payload) => {
+        setInquiries((prev) => prev.map(i => i.id === payload.new.id ? payload.new : i));
+      })
+      .on('postgres_changes', { event: 'DELETE', schema: 'public', table: 'inquiries' }, (payload) => {
+        setInquiries((prev) => prev.filter(i => i.id !== payload.old.id));
+      })
+      .subscribe();
+
+    return () => {
+      // unsubscribe on unmount
+      try { supabase.removeChannel(channel); } catch (e) { /* ignore */ }
+    };
   }, [loadInquiries]);
 
   const handleDelete = async (id) => {

@@ -1,4 +1,4 @@
-import { ArrowUpRight, Clock3, MessageSquare, Sparkles, TrendingUp, Users } from 'lucide-react';
+import { ArrowUpRight, Clock3, MessageSquare, Package, Sparkles, TrendingUp, Users } from 'lucide-react';
 import { useMemo } from 'react';
 import { getProducts } from '../../data/mockData';
 
