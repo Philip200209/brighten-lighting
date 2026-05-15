@@ -1,10 +1,18 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ShoppingCart } from 'lucide-react';
 import heroImage from '../assets/hero.png';
 import ProductStructuredData from './ProductStructuredData';
+import { useCart } from '../contexts/CartContext';
+import toast from 'react-hot-toast';
 
 export function ProductCard({ product }) {
   const imageSrc = product.image_url || product.image || heroImage;
+  const { addToCart } = useCart();
+
+  const handleAddToCart = () => {
+    addToCart(product, 1);
+    toast.success(`${product.name} added to cart`);
+  };
 
   return (
     <div className="group relative bg-dark-light rounded-xl overflow-hidden border border-white/5 hover:border-gold/30 transition-all duration-500 hover:-translate-y-2">
@@ -31,25 +39,36 @@ export function ProductCard({ product }) {
       <div className="p-5 flex flex-col gap-4">
         <p className="text-sm text-gray-400 line-clamp-2">{product.description}</p>
         
-        <div className="flex items-center justify-between mt-auto">
+        <div className="flex items-center justify-between mt-auto gap-3">
           <span className="text-lg font-medium text-white">
             KSh {product.price.toLocaleString()}
           </span>
           
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            className="inline-flex items-center gap-2 text-sm font-medium text-gold hover:text-gold-light transition-colors"
+          >
+            <ShoppingCart className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+            Add to Cart
+          </button>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
           <Link
             to={`/contact?product=${product.id}`}
-            className="flex items-center gap-2 text-sm font-medium text-gold hover:text-gold-light transition-colors"
+            className="inline-flex items-center justify-center gap-2 text-sm font-medium bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-lg py-3 transition-colors"
           >
-            Inquire Now
+            Inquire
+          </Link>
+          <Link
+            to={`/checkout/${product.id}`}
+            className="inline-flex items-center justify-center gap-2 text-sm font-medium bg-gold/10 hover:bg-gold/20 text-gold border border-gold/20 rounded-lg py-3 transition-colors"
+          >
+            Buy Now
             <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
-        <Link
-          to={`/checkout/${product.id}`}
-          className="inline-flex items-center justify-center gap-2 text-sm font-medium bg-white/5 hover:bg-white/10 text-white border border-white/10 rounded-lg py-3 transition-colors"
-        >
-          Buy Now
-        </Link>
       </div>
       <ProductStructuredData product={product} />
     </div>

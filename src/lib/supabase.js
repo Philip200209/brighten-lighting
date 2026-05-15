@@ -314,3 +314,73 @@ export const paymentsService = {
     return data[0];
   },
 };
+
+// Cart service
+export const cartsService = {
+  async getByUserId(userId) {
+    const { data, error } = await supabase
+      .from('carts')
+      .select('*')
+      .eq('user_id', userId)
+      .maybeSingle();
+    if (error) throw error;
+    return data;
+  },
+
+  async upsert(userId, items) {
+    const { data, error } = await supabase
+      .from('carts')
+      .upsert(
+        {
+          user_id: userId,
+          items,
+          updated_at: new Date().toISOString(),
+        },
+        { onConflict: 'user_id' }
+      )
+      .select();
+    if (error) throw error;
+    return data?.[0] || null;
+  },
+};
+
+// Orders service
+export const ordersService = {
+  async getAll() {
+    const { data, error } = await supabase
+      .from('orders')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data || [];
+  },
+
+  async getById(id) {
+    const { data, error } = await supabase
+      .from('orders')
+      .select('*')
+      .eq('id', id)
+      .maybeSingle();
+    if (error) throw error;
+    return data;
+  },
+
+  async getByOrderNumber(orderNumber) {
+    const { data, error } = await supabase
+      .from('orders')
+      .select('*')
+      .eq('order_number', orderNumber)
+      .maybeSingle();
+    if (error) throw error;
+    return data;
+  },
+
+  async create(order) {
+    const { data, error } = await supabase
+      .from('orders')
+      .insert([order])
+      .select();
+    if (error) throw error;
+    return data[0];
+  },
+};

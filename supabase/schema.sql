@@ -60,6 +60,33 @@ create table if not exists public.payments (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.carts (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  items jsonb not null default '[]'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.orders (
+  id bigint generated always as identity primary key,
+  order_number text not null unique,
+  user_id uuid references auth.users(id) on delete set null,
+  email citext not null,
+  customer_name text,
+  phone varchar(20) not null,
+  address text not null,
+  payment_method varchar(20) not null check (payment_method in ('mpesa', 'cod')),
+  payment_status varchar(50) not null default 'pending' check (payment_status in ('pending', 'paid', 'cash_on_delivery', 'failed')),
+  subtotal numeric(10, 2) not null check (subtotal >= 0),
+  delivery_fee numeric(10, 2) not null default 0 check (delivery_fee >= 0),
+  total numeric(10, 2) not null check (total >= 0),
+  items jsonb not null default '[]'::jsonb,
+  status varchar(50) not null default 'pending' check (status in ('pending', 'processing', 'completed', 'cancelled')),
+  notes text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
 create index if not exists profiles_role_idx on public.profiles (role);
 create index if not exists products_category_idx on public.products (category);
 create index if not exists products_name_idx on public.products (name);
@@ -69,6 +96,10 @@ create index if not exists inquiries_created_at_idx on public.inquiries (created
 create index if not exists payments_status_idx on public.payments (status);
 create index if not exists payments_phone_idx on public.payments (phone_number);
 create index if not exists payments_created_at_idx on public.payments (created_at desc);
+create index if not exists carts_updated_at_idx on public.carts (updated_at desc);
+create index if not exists orders_user_idx on public.orders (user_id);
+create index if not exists orders_status_idx on public.orders (status);
+create index if not exists orders_created_at_idx on public.orders (created_at desc);
 
 drop trigger if exists profiles_set_updated_at on public.profiles;
 create trigger profiles_set_updated_at
@@ -90,6 +121,18 @@ create trigger payments_set_updated_at
 before update on public.payments
 for each row execute function public.set_updated_at();
 
+drop trigger if exists carts_set_updated_at on public.carts;
+create trigger carts_set_updated_at
+before update on public.carts
+for each row execute function public.set_updated_at();
+
+drop trigger if exists orders_set_updated_at on public.orders;
+create trigger orders_set_updated_at
+before update on public.orders
+for each row execute function public.set_updated_at();
+
+alter table public.carts enable row level security;
+alter table public.orders enable row level security;
 alter table public.profiles enable row level security;
 alter table public.products enable row level security;
 alter table public.inquiries enable row level security;
@@ -327,3 +370,41 @@ using (
       and p.role = 'admin'
   )
 );
+
+drop policy if exists carts_select_own on public.carts;
+create policy carts_select_own
+on public.carts
+for select
+using (auth.uid() = user_id);
+
+drop policy if exists carts_insert_own on public.carts;
+create policy carts_insert_own
+on public.carts
+for insert
+with check (auth.uid() = user_id);
+
+drop policy if exists carts_update_own on public.carts;
+create policy carts_update_own
+on public.carts
+for update
+using (auth.uid() = user_id)
+with check (auth.uid() = user_id);
+
+drop policy if exists orders_select_own on public.orders;
+create policy orders_select_own
+on public.orders
+for select
+using (auth.uid() = user_id);
+
+drop policy if exists orders_insert_own on public.orders;
+create policy orders_insert_own
+on public.orders
+for insert
+with check (auth.uid() = user_id);
+
+drop policy if exists orders_update_own on public.orders;
+create policy orders_update_own
+on public.orders
+for update
+using (auth.uid() = user_id)
+with check (auth.uid() = user_id);

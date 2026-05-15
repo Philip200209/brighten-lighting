@@ -120,4 +120,83 @@ create policy payments_delete_admin
   for delete
   using (public.is_admin());
 
+-- Cart storage for logged-in users
+create table if not exists public.carts (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  items jsonb not null default '[]'::jsonb,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+create table if not exists public.orders (
+  id bigint generated always as identity primary key,
+  order_number text not null unique,
+  user_id uuid references auth.users(id) on delete set null,
+  email text not null,
+  customer_name text,
+  phone varchar(20) not null,
+  address text not null,
+  payment_method varchar(20) not null,
+  payment_status varchar(50) not null default 'pending',
+  subtotal numeric(10, 2) not null default 0,
+  delivery_fee numeric(10, 2) not null default 0,
+  total numeric(10, 2) not null default 0,
+  items jsonb not null default '[]'::jsonb,
+  status varchar(50) not null default 'pending',
+  notes text,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.carts enable row level security;
+alter table public.orders enable row level security;
+
+drop trigger if exists carts_set_updated_at on public.carts;
+create trigger carts_set_updated_at
+  before update on public.carts
+  for each row execute function public.set_updated_at();
+
+drop trigger if exists orders_set_updated_at on public.orders;
+create trigger orders_set_updated_at
+  before update on public.orders
+  for each row execute function public.set_updated_at();
+
+drop policy if exists carts_select_own on public.carts;
+create policy carts_select_own
+  on public.carts
+  for select
+  using (auth.uid() = user_id);
+
+drop policy if exists carts_insert_own on public.carts;
+create policy carts_insert_own
+  on public.carts
+  for insert
+  with check (auth.uid() = user_id);
+
+drop policy if exists carts_update_own on public.carts;
+create policy carts_update_own
+  on public.carts
+  for update
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
+drop policy if exists orders_select_own on public.orders;
+create policy orders_select_own
+  on public.orders
+  for select
+  using (auth.uid() = user_id);
+
+drop policy if exists orders_insert_own on public.orders;
+create policy orders_insert_own
+  on public.orders
+  for insert
+  with check (auth.uid() = user_id);
+
+drop policy if exists orders_update_own on public.orders;
+create policy orders_update_own
+  on public.orders
+  for update
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);
+
 -- End of fix

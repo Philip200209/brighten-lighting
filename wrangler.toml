@@ -1,6 +1,11 @@
 name = "brighten-lighting"
 compatibility_date = "2024-01-01"
 
+routes = [
+  { pattern = "brightenlighting.com/*", zone_id = "ad9fcf3e44745e8ab764392b95a38d8d" },
+  { pattern = "www.brightenlighting.com/*", zone_id = "ad9fcf3e44745e8ab764392b95a38d8d" }
+]
+
 [build]
 command = "npm run build"
 

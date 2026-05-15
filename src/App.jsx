@@ -10,7 +10,9 @@ import { About } from './pages/public/About';
 import { Contact } from './pages/public/Contact';
 import { CustomerLogin } from './pages/public/CustomerLogin';
 import { CustomerRegister } from './pages/public/CustomerRegister';
+import { Cart } from './pages/public/Cart';
 import { Checkout } from './pages/public/Checkout';
+import { OrderSuccess } from './pages/public/OrderSuccess';
 
 // Admin Pages
 import { Login } from './pages/admin/Login';
@@ -30,7 +32,10 @@ function App() {
         <Route element={<PublicLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/shop" element={<Shop />} />
+          <Route path="/cart" element={<ProtectedRoute requireAdmin={false}><Cart /></ProtectedRoute>} />
+          <Route path="/checkout" element={<ProtectedRoute requireAdmin={false}><Checkout /></ProtectedRoute>} />
           <Route path="/checkout/:productId" element={<ProtectedRoute requireAdmin={false}><Checkout /></ProtectedRoute>} />
+          <Route path="/order-success/:orderId" element={<ProtectedRoute requireAdmin={false}><OrderSuccess /></ProtectedRoute>} />
           <Route path="/categories" element={<Shop />} /> {/* Use Shop for categories as it has the filters */}
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
