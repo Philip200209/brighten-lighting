@@ -162,7 +162,7 @@ export function Products() {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-4 md:p-0">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div className="relative w-full sm:w-72 shrink-0">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -179,7 +179,7 @@ export function Products() {
             resetForm();
             setIsModalOpen(true);
           }}
-          className="bg-gold hover:bg-gold-light text-dark font-medium px-4 py-2.5 rounded-lg flex items-center gap-2 transition-colors shrink-0"
+          className="w-full sm:w-auto bg-gold hover:bg-gold-light text-dark font-medium px-4 py-2.5 rounded-lg flex items-center justify-center gap-2 transition-colors shrink-0"
         >
           <Plus className="w-5 h-5" />
           Add Product
@@ -192,65 +192,116 @@ export function Products() {
           <p className="text-gray-400">Loading products...</p>
         </div>
       ) : (
-        <div className="bg-dark-lighter border border-white/5 rounded-2xl overflow-hidden">
-          <div className="responsive-scroll overflow-x-auto stacked-table">
-            <table className="w-full text-left">
-              <thead className="bg-white/5 border-b border-white/5">
-                <tr>
-                  <th className="p-4 text-sm font-medium text-gray-400">Product</th>
-                  <th className="p-4 text-sm font-medium text-gray-400">Category</th>
-                  <th className="p-4 text-sm font-medium text-gray-400">Price</th>
-                  <th className="p-4 text-sm font-medium text-gray-400">Stock</th>
-                  <th className="p-4 text-sm font-medium text-gray-400 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5">
-                {filteredProducts.map(product => (
-                  <tr key={product.id} className="hover:bg-white/5 transition-colors">
-                    <td className="p-4" data-label="Product">
-                      <div className="flex items-center gap-4">
-                        <img 
-                          src={product.image_url} 
-                          alt={product.name} 
-                          className="w-12 h-12 rounded-lg object-cover bg-dark" 
-                        />
-                        <span className="text-white font-medium">{product.name}</span>
-                      </div>
-                    </td>
-                    <td className="p-4 text-gray-300" data-label="Category">{product.category}</td>
-                    <td className="p-4 text-gold font-medium" data-label="Price">KES {product.price.toLocaleString()}</td>
-                    <td className="p-4 text-gray-300" data-label="Stock">{product.stock}</td>
-                    <td className="p-4 text-right" data-label="Actions">
-                      <div className="flex justify-end gap-2">
-                        <button 
-                          onClick={() => handleEdit(product)}
-                          className="p-2 hover:bg-gold/10 rounded-lg text-gray-400 hover:text-gold transition-colors"
-                          title="Edit Product"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                        <button 
-                          onClick={() => handleDelete(product.id)}
-                          className="p-2 hover:bg-red-500/10 rounded-lg text-gray-400 hover:text-red-400 transition-colors"
-                          title="Delete Product"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-                {filteredProducts.length === 0 && (
+        <>
+          {/* Desktop Table View */}
+          <div className="hidden md:block bg-dark-lighter border border-white/5 rounded-2xl overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left">
+                <thead className="bg-white/5 border-b border-white/5">
                   <tr>
-                    <td colSpan="5" className="p-8 text-center text-gray-500" data-label="No results">
-                      {search ? 'No products found matching your search.' : 'No products yet. Add a new product to get started.'}
-                    </td>
+                    <th className="p-4 text-sm font-medium text-gray-400">Product</th>
+                    <th className="p-4 text-sm font-medium text-gray-400">Category</th>
+                    <th className="p-4 text-sm font-medium text-gray-400">Price</th>
+                    <th className="p-4 text-sm font-medium text-gray-400">Stock</th>
+                    <th className="p-4 text-sm font-medium text-gray-400 text-right">Actions</th>
                   </tr>
-                )}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-white/5">
+                  {filteredProducts.map(product => (
+                    <tr key={product.id} className="hover:bg-white/5 transition-colors">
+                      <td className="p-4">
+                        <div className="flex items-center gap-4">
+                          <img 
+                            src={product.image_url} 
+                            alt={product.name} 
+                            className="w-12 h-12 rounded-lg object-cover bg-dark" 
+                          />
+                          <span className="text-white font-medium">{product.name}</span>
+                        </div>
+                      </td>
+                      <td className="p-4 text-gray-300">{product.category}</td>
+                      <td className="p-4 text-gold font-medium">KES {product.price.toLocaleString()}</td>
+                      <td className="p-4 text-gray-300">{product.stock}</td>
+                      <td className="p-4 text-right">
+                        <div className="flex justify-end gap-2">
+                          <button 
+                            onClick={() => handleEdit(product)}
+                            className="p-2 hover:bg-gold/10 rounded-lg text-gray-400 hover:text-gold transition-colors"
+                            title="Edit Product"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button 
+                            onClick={() => handleDelete(product.id)}
+                            className="p-2 hover:bg-red-500/10 rounded-lg text-gray-400 hover:text-red-400 transition-colors"
+                            title="Delete Product"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {filteredProducts.length === 0 && (
+                    <tr>
+                      <td colSpan="5" className="p-8 text-center text-gray-500">
+                        {search ? 'No products found matching your search.' : 'No products yet. Add a new product to get started.'}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+
+          {/* Mobile Card View */}
+          <div className="md:hidden space-y-4">
+            {filteredProducts.length === 0 ? (
+              <div className="text-center py-12">
+                <p className="text-gray-500">
+                  {search ? 'No products found matching your search.' : 'No products yet. Add a new product to get started.'}
+                </p>
+              </div>
+            ) : (
+              filteredProducts.map(product => (
+                <div key={product.id} className="bg-dark-lighter border border-white/5 rounded-xl p-4 space-y-3">
+                  <div className="flex gap-3">
+                    <img 
+                      src={product.image_url} 
+                      alt={product.name} 
+                      className="w-20 h-20 rounded-lg object-cover bg-dark shrink-0" 
+                    />
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-white font-medium truncate">{product.name}</h3>
+                      <p className="text-sm text-gray-400">{product.category}</p>
+                      <p className="text-gold font-medium mt-1">KES {product.price.toLocaleString()}</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-sm border-t border-white/5 pt-3">
+                    <div>
+                      <p className="text-gray-400">Stock</p>
+                      <p className="text-white font-medium">{product.stock}</p>
+                    </div>
+                    <div className="flex gap-2 justify-end">
+                      <button 
+                        onClick={() => handleEdit(product)}
+                        className="px-3 py-2 hover:bg-gold/10 rounded-lg text-gold hover:text-gold transition-colors text-sm font-medium"
+                      >
+                        Edit
+                      </button>
+                      <button 
+                        onClick={() => handleDelete(product.id)}
+                        className="px-3 py-2 hover:bg-red-500/10 rounded-lg text-red-400 hover:text-red-300 transition-colors text-sm font-medium"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </>
       )}
 
       {/* Product Modal */}
@@ -274,11 +325,11 @@ export function Products() {
             </div>
             
             <form onSubmit={handleSubmit}>
-              <div className="grid grid-cols-2 gap-6">
+              <div className="space-y-4">
                 
                 {/* Image Upload Area */}
                 <div 
-                  className="col-span-2 md:col-span-1 border-2 border-dashed border-white/10 rounded-xl flex flex-col items-center justify-center h-48 text-gray-400 hover:border-gold/50 transition-colors cursor-pointer relative overflow-hidden bg-dark"
+                  className="border-2 border-dashed border-white/10 rounded-xl flex flex-col items-center justify-center h-40 sm:h-48 text-gray-400 hover:border-gold/50 transition-colors cursor-pointer relative overflow-hidden bg-dark"
                   onClick={() => fileInputRef.current?.click()}
                 >
                   {imagePreview ? (
@@ -299,14 +350,14 @@ export function Products() {
                 </div>
                 
                 {/* Form Fields */}
-                <div className="col-span-2 md:col-span-1 space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   <input 
                     type="text" 
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                     placeholder="Product Name" 
-                    className="w-full bg-dark border border-white/10 rounded-lg px-4 py-2 text-white focus:border-gold/50 focus:outline-none" 
+                    className="w-full bg-dark border border-white/10 rounded-lg px-3 sm:px-4 py-2 text-sm sm:text-base text-white focus:border-gold/50 focus:outline-none" 
                   />
                   <input 
                     type="number" 
@@ -316,13 +367,13 @@ export function Products() {
                     value={formData.price}
                     onChange={(e) => setFormData({...formData, price: e.target.value})}
                     placeholder="Price (KES)" 
-                    className="w-full bg-dark border border-white/10 rounded-lg px-4 py-2 text-white focus:border-gold/50 focus:outline-none" 
+                    className="w-full bg-dark border border-white/10 rounded-lg px-3 sm:px-4 py-2 text-sm sm:text-base text-white focus:border-gold/50 focus:outline-none" 
                   />
                   <select 
                     required
                     value={formData.category}
                     onChange={(e) => setFormData({...formData, category: e.target.value})}
-                    className="w-full bg-dark border border-white/10 rounded-lg px-4 py-2 text-white focus:border-gold/50 focus:outline-none"
+                    className="w-full bg-dark border border-white/10 rounded-lg px-3 sm:px-4 py-2 text-sm sm:text-base text-white focus:border-gold/50 focus:outline-none"
                   >
                     <option value="">Select Category</option>
                     {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
@@ -334,11 +385,11 @@ export function Products() {
                     value={formData.stock}
                     onChange={(e) => setFormData({...formData, stock: e.target.value})}
                     placeholder="Stock Quantity" 
-                    className="w-full bg-dark border border-white/10 rounded-lg px-4 py-2 text-white focus:border-gold/50 focus:outline-none" 
+                    className="w-full bg-dark border border-white/10 rounded-lg px-3 sm:px-4 py-2 text-sm sm:text-base text-white focus:border-gold/50 focus:outline-none" 
                   />
                 </div>
                 
-                <div className="col-span-2 space-y-2">
+                <div className="space-y-2">
                   <label className="block text-sm font-medium text-gray-300">
                     Product Overview
                   </label>
@@ -347,8 +398,8 @@ export function Products() {
                     value={formData.description}
                     onChange={(e) => setFormData({...formData, description: e.target.value})}
                     placeholder="Write the overview customers will see on the product page"
-                    rows={5} 
-                    className="w-full bg-dark border border-white/10 rounded-lg px-4 py-3 text-white resize-none focus:border-gold/50 focus:outline-none"
+                    rows={4} 
+                    className="w-full bg-dark border border-white/10 rounded-lg px-3 sm:px-4 py-3 text-sm sm:text-base text-white resize-none focus:border-gold/50 focus:outline-none"
                   ></textarea>
                   <p className="text-xs text-gray-500">
                     This content appears on the public product page and in search results.
@@ -356,14 +407,14 @@ export function Products() {
                 </div>
               </div>
               
-              <div className="flex justify-end gap-4 mt-8 pt-6 border-t border-white/10">
+              <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 sm:gap-4 mt-6 sm:mt-8 pt-4 sm:pt-6 border-t border-white/10">
                 <button 
                   type="button" 
                   onClick={() => {
                     setIsModalOpen(false);
                     resetForm();
                   }}
-                  className="px-6 py-2.5 rounded-lg text-gray-400 hover:text-white"
+                  className="px-4 sm:px-6 py-2.5 rounded-lg text-gray-400 hover:text-white text-sm sm:text-base"
                   disabled={isSubmitting}
                 >
                   Cancel
@@ -371,7 +422,7 @@ export function Products() {
                 <button 
                   type="submit" 
                   disabled={isSubmitting}
-                  className="px-6 py-2.5 rounded-lg bg-gold hover:bg-gold-light text-dark font-medium transition-colors disabled:opacity-50 flex items-center gap-2"
+                  className="px-4 sm:px-6 py-2.5 rounded-lg bg-gold hover:bg-gold-light text-dark font-medium transition-colors disabled:opacity-50 flex items-center justify-center gap-2 text-sm sm:text-base"
                 >
                   {isSubmitting ? (
                     <>

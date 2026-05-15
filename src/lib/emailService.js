@@ -1,5 +1,25 @@
 import axios from 'axios';
 
+function getSiteOrigin() {
+  const configuredUrl = import.meta.env.VITE_APP_URL || import.meta.env.VITE_APP_DOMAIN;
+
+  if (configuredUrl) {
+    return configuredUrl.startsWith('http://') || configuredUrl.startsWith('https://')
+      ? configuredUrl
+      : `https://${configuredUrl}`;
+  }
+
+  if (typeof window !== 'undefined' && window.location?.origin) {
+    return window.location.origin;
+  }
+
+  return 'https://brighten-lighting.pages.dev';
+}
+
+function getSiteLabel() {
+  return getSiteOrigin().replace(/^https?:\/\//, '');
+}
+
 const RESEND_API_KEY = import.meta.env.VITE_RESEND_API_KEY;
 const ADMIN_EMAIL = import.meta.env.VITE_ADMIN_EMAIL || import.meta.env.VITE_RECIPIENT_EMAIL;
 const BUSINESS_FROM_EMAIL = import.meta.env.VITE_BUSINESS_FROM_EMAIL || 'Brighten Lighting <noreply@resend.dev>';
@@ -121,7 +141,7 @@ export async function sendInquiryConfirmation(inquiry) {
       <div style="margin-top: 30px; text-align: center; color: #999; font-size: 12px; border-top: 1px solid #e5e7eb; padding-top: 20px;">
         <p>
           Eldoret City, Kenya | 0722339377<br/>
-          <a href="https://brighten-lighting.netlify.app" style="color: #F59E0B; text-decoration: none;">brighten-lighting.netlify.app</a>
+          <a href="${getSiteOrigin()}" style="color: #F59E0B; text-decoration: none;">${getSiteLabel()}</a>
         </p>
       </div>
     </div>

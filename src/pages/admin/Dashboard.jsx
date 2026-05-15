@@ -57,42 +57,43 @@ export function Dashboard() {
   ];
 
   return (
-    <div className="space-y-6 md:space-y-8 animate-fade-in">
-      <div className="glass-dark rounded-3xl border border-white/10 p-5 md:p-8 overflow-hidden relative">
+    <div className="space-y-4 sm:space-y-6 md:space-y-8 animate-fade-in">
+      <div className="glass-dark rounded-2xl sm:rounded-3xl border border-white/10 p-4 sm:p-6 md:p-8 overflow-hidden relative">
         <div className="absolute -right-16 -top-16 w-48 h-48 rounded-full bg-gold/10 blur-3xl" />
         <div className="absolute -left-16 -bottom-16 w-48 h-48 rounded-full bg-blue-500/10 blur-3xl" />
 
-        <div className="relative flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+        <div className="relative flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 sm:gap-6">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full border border-gold/30 bg-gold/10 text-gold text-xs font-semibold uppercase tracking-wider mb-4">
-              <Sparkles className="w-3.5 h-3.5" />
+            <div className="inline-flex items-center gap-2 px-2 sm:px-3 py-1 rounded-full border border-gold/30 bg-gold/10 text-gold text-xs font-semibold uppercase tracking-wider mb-3 sm:mb-4">
+              <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
               Admin Dashboard
             </div>
-            <h2 className="text-2xl md:text-4xl font-serif text-white leading-tight">
+            <h2 className="text-xl sm:text-2xl md:text-4xl font-serif text-white leading-tight">
               Welcome back. Here is your store snapshot.
             </h2>
-            <p className="mt-3 text-gray-300 max-w-2xl">
+            <p className="mt-2 sm:mt-3 text-sm sm:text-base text-gray-300 max-w-2xl">
               Track inquiries, keep an eye on catalog health, and monitor product mix from one clean overview.
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 w-full lg:w-auto lg:min-w-[300px]">
-            <div className="bg-dark/80 border border-white/10 rounded-xl p-4">
+          <div className="grid grid-cols-2 gap-2 sm:gap-3 w-full lg:w-auto lg:min-w-[280px]">
+            <div className="bg-dark/80 border border-white/10 rounded-lg sm:rounded-xl p-3 sm:p-4">
               <p className="text-xs uppercase tracking-wide text-gray-400 mb-1">Top Category</p>
-              <p className="text-sm sm:text-base text-white font-semibold truncate">{topCategory}</p>
+              <p className="text-xs sm:text-sm text-white font-semibold truncate">{topCategory}</p>
             </div>
-            <div className="bg-dark/80 border border-white/10 rounded-xl p-4">
+            <div className="bg-dark/80 border border-white/10 rounded-lg sm:rounded-xl p-3 sm:p-4">
               <p className="text-xs uppercase tracking-wide text-gray-400 mb-1">Updated</p>
-              <p className="text-sm sm:text-base text-white font-semibold inline-flex items-center gap-2">
-                <Clock3 className="w-4 h-4 text-gold" />
-                {new Date().toLocaleDateString()}
+              <p className="text-xs sm:text-sm text-white font-semibold inline-flex items-center gap-2">
+                <Clock3 className="w-3 h-3 sm:w-4 sm:h-4 text-gold" />
+                <span className="hidden xs:inline">{new Date().toLocaleDateString()}</span>
+                <span className="xs:hidden">{new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 md:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
         {stats.map((stat) => {
           const Icon = stat.icon;
           return (
@@ -111,34 +112,34 @@ export function Dashboard() {
         })}
       </div>
 
-      <div className="grid grid-cols-1 gap-6">
-        <div className="glass-dark p-6 rounded-2xl border border-white/10">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-2xl font-serif text-white">Recent Inquiries</h3>
-            <span className="px-3 py-1 rounded-full text-xs font-semibold bg-white/5 text-gray-300 border border-white/10">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6">
+        <div className="glass-dark p-4 sm:p-6 rounded-2xl border border-white/10">
+          <div className="flex items-center justify-between mb-4 sm:mb-6">
+            <h3 className="text-xl sm:text-2xl font-serif text-white">Recent Inquiries</h3>
+            <span className="px-2 sm:px-3 py-1 rounded-full text-xs font-semibold bg-white/5 text-gray-300 border border-white/10">
               {inquiries.length} total
             </span>
           </div>
 
           {inquiries.length > 0 ? (
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {inquiries.slice(0, 5).map((inquiry) => (
-                <div key={inquiry.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 p-4 bg-dark/80 rounded-xl border border-white/10">
-                  <div className="min-w-0">
-                    <h4 className="text-white font-medium truncate">{inquiry.name}</h4>
-                    <p className="text-sm text-gray-400 truncate">{inquiry.subject || inquiry.message}</p>
+                <div key={inquiry.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3 p-3 sm:p-4 bg-dark/80 rounded-lg sm:rounded-xl border border-white/10">
+                  <div className="min-w-0 flex-1">
+                    <h4 className="text-xs sm:text-sm text-white font-medium truncate">{inquiry.name}</h4>
+                    <p className="text-xs sm:text-sm text-gray-400 truncate line-clamp-1">{inquiry.subject || inquiry.message}</p>
                   </div>
                   <span className="text-xs text-gray-500 whitespace-nowrap self-start sm:self-auto">
-                    {new Date(inquiry.date).toLocaleDateString()}
+                    {new Date(inquiry.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                   </span>
                 </div>
               ))}
             </div>
           ) : (
-            <div className="text-center py-14 rounded-xl border border-dashed border-white/10 bg-dark/40">
-              <MessageSquare className="w-10 h-10 text-gray-600 mx-auto mb-3" />
-              <p className="text-gray-400 font-medium">No inquiries yet.</p>
-              <p className="text-sm text-gray-500 mt-1">New customer messages will appear here.</p>
+            <div className="text-center py-8 sm:py-14 rounded-lg sm:rounded-xl border border-dashed border-white/10 bg-dark/40">
+              <MessageSquare className="w-8 sm:w-10 h-8 sm:h-10 text-gray-600 mx-auto mb-2 sm:mb-3" />
+              <p className="text-sm sm:text-base text-gray-400 font-medium">No inquiries yet.</p>
+              <p className="text-xs sm:text-sm text-gray-500 mt-1">New customer messages will appear here.</p>
             </div>
           )}
         </div>

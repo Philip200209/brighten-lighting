@@ -1,0 +1,7 @@
+[[routes]]
+pattern = "brightenlighting.com/api/*"
+zone_name = "brightenlighting.com"
+
+[[routes]]
+pattern = "www.brightenlighting.com/api/*"
+zone_name = "brightenlighting.com"

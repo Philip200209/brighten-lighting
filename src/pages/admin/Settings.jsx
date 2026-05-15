@@ -46,24 +46,24 @@ export function Settings() {
   };
 
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="space-y-4 sm:space-y-6 max-w-3xl">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-serif text-white flex items-center gap-2">
-          <ShieldCheck className="w-6 h-6 text-gold" />
+        <h2 className="text-xl sm:text-2xl font-serif text-white flex items-center gap-2">
+          <ShieldCheck className="w-5 sm:w-6 h-5 sm:h-6 text-gold" />
           Security Settings
         </h2>
       </div>
 
-      <div className="bg-dark-lighter border border-white/5 rounded-2xl p-8">
-        <div className="mb-8 border-b border-white/5 pb-6">
-          <h3 className="text-xl text-white font-medium mb-2">Change Administrator Password</h3>
-          <p className="text-gray-400 text-sm">
+      <div className="bg-dark-lighter border border-white/5 rounded-xl sm:rounded-2xl p-4 sm:p-6 md:p-8">
+        <div className="mb-6 sm:mb-8 border-b border-white/5 pb-4 sm:pb-6">
+          <h3 className="text-lg sm:text-xl text-white font-medium mb-2">Change Administrator Password</h3>
+          <p className="text-gray-400 text-xs sm:text-sm">
             Update your password to keep your admin portal secure. Make sure to choose a strong password.
           </p>
         </div>
 
         {status.message && (
-          <div className={`p-4 rounded-xl mb-8 flex items-center gap-3 border ${
+          <div className={`p-3 sm:p-4 rounded-lg sm:rounded-xl mb-6 sm:mb-8 flex items-center gap-3 border text-xs sm:text-sm ${
             status.type === 'success' 
               ? 'bg-green-500/10 border-green-500/20 text-green-400' 
               : 'bg-red-500/10 border-red-500/20 text-red-400'
@@ -72,50 +72,50 @@ export function Settings() {
           </div>
         )}
 
-        <form onSubmit={handlePasswordReset} className="space-y-6 max-w-md">
+        <form onSubmit={handlePasswordReset} className="space-y-4 sm:space-y-6 max-w-md">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-400">New Password</label>
+            <label className="text-xs sm:text-sm font-medium text-gray-400">New Password</label>
             <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+              <Lock className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 sm:w-5 h-4 sm:h-5 text-gray-500" />
               <input
                 type="password"
                 name="new"
                 required
                 value={passwords.new}
                 onChange={handleChange}
-                className="w-full bg-dark border border-white/10 rounded-lg py-3 pl-12 pr-4 text-white focus:outline-none focus:border-gold/50 transition-colors"
+                className="w-full bg-dark border border-white/10 rounded-lg py-2 sm:py-3 pl-10 sm:pl-12 pr-3 sm:pr-4 text-sm sm:text-base text-white focus:outline-none focus:border-gold/50 transition-colors"
                 placeholder="Enter new password"
               />
             </div>
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-400">Confirm New Password</label>
+            <label className="text-xs sm:text-sm font-medium text-gray-400">Confirm New Password</label>
             <div className="relative">
-              <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+              <Lock className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 w-4 sm:w-5 h-4 sm:h-5 text-gray-500" />
               <input
                 type="password"
                 name="confirm"
                 required
                 value={passwords.confirm}
                 onChange={handleChange}
-                className="w-full bg-dark border border-white/10 rounded-lg py-3 pl-12 pr-4 text-white focus:outline-none focus:border-gold/50 transition-colors"
+                className="w-full bg-dark border border-white/10 rounded-lg py-2 sm:py-3 pl-10 sm:pl-12 pr-3 sm:pr-4 text-sm sm:text-base text-white focus:outline-none focus:border-gold/50 transition-colors"
                 placeholder="Confirm new password"
               />
             </div>
           </div>
 
-          <div className="pt-4">
+          <div className="pt-2 sm:pt-4">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="bg-gold hover:bg-gold-light text-dark font-medium px-6 py-3 rounded-lg flex items-center gap-2 transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full sm:w-auto bg-gold hover:bg-gold-light text-dark font-medium px-4 sm:px-6 py-2.5 sm:py-3 rounded-lg flex items-center justify-center sm:justify-start gap-2 transition-colors disabled:opacity-70 disabled:cursor-not-allowed text-sm sm:text-base"
             >
               {isSubmitting ? (
-                <span className="w-5 h-5 border-2 border-dark/30 border-t-dark rounded-full animate-spin"></span>
+                <span className="w-4 sm:w-5 h-4 sm:h-5 border-2 border-dark/30 border-t-dark rounded-full animate-spin"></span>
               ) : (
                 <>
-                  <Save className="w-5 h-5" />
+                  <Save className="w-4 sm:w-5 h-4 sm:h-5" />
                   Save New Password
                 </>
               )}

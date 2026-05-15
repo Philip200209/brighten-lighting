@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import heroImage from '../assets/hero.png';
+import ProductStructuredData from './ProductStructuredData';
 
 export function ProductCard({ product }) {
   const imageSrc = product.image_url || product.image || heroImage;
@@ -50,6 +51,7 @@ export function ProductCard({ product }) {
           Buy Now
         </Link>
       </div>
+      <ProductStructuredData product={product} />
     </div>
   );
 }

@@ -2,13 +2,33 @@
  * SEO Utilities for dynamic meta tag management
  */
 
+function getSiteOrigin() {
+  const configuredUrl = import.meta.env.VITE_APP_URL || import.meta.env.VITE_APP_DOMAIN;
+
+  if (configuredUrl) {
+    return configuredUrl.startsWith('http://') || configuredUrl.startsWith('https://')
+      ? configuredUrl
+      : `https://${configuredUrl}`;
+  }
+
+  if (typeof window !== 'undefined' && window.location?.origin) {
+    return window.location.origin;
+  }
+
+  return 'https://brighten-lighting.pages.dev';
+}
+
+function getSiteUrl(path = '') {
+  return `${getSiteOrigin()}${path}`;
+}
+
 /**
  * Update page meta tags dynamically
  */
 export function updateMetaTags({
   title,
   description,
-  image = 'https://brighten-lighting.netlify.app/og-image.jpg',
+  image = getSiteUrl('/og-image.jpg'),
   url = window.location.href,
   type = 'website',
 }) {
@@ -59,7 +79,7 @@ export function generateProductSchema(product) {
     'priceCurrency': 'KES',
     'availability': product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
     'category': product.category,
-    'url': `https://brighten-lighting.netlify.app/shop?product=${product.id}`,
+    'url': getSiteUrl(`/shop?product=${product.id}`),
   };
 }
 
@@ -93,7 +113,7 @@ export function injectSchema(schema) {
  * Generate sitemap XML
  */
 export function generateSitemap(products = []) {
-  const baseUrl = 'https://brighten-lighting.netlify.app';
+  const baseUrl = getSiteOrigin();
   
   const pages = [
     { url: '', priority: 1.0 },
@@ -130,7 +150,7 @@ Allow: /
 Disallow: /admin
 Disallow: /admin/
 
-Sitemap: https://brighten-lighting.netlify.app/sitemap.xml
+Sitemap: ${getSiteUrl('/sitemap.xml')}
 
 # Respect crawl delay
 Crawl-delay: 1

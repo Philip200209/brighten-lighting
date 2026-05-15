@@ -78,17 +78,17 @@ export function Inquiries() {
   const resolvedCount = inquiries.filter(i => i.status === 'resolved').length;
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
         <h2 className="text-2xl font-serif text-white">Customer Inquiries</h2>
-        <div className="flex gap-3">
-          <div className="bg-dark-lighter border border-white/5 rounded-lg px-4 py-2 flex items-center gap-2">
-            <span className="text-sm text-gray-400">Total:</span>
+        <div className="flex gap-2 flex-wrap">
+          <div className="bg-dark-lighter border border-white/5 rounded-lg px-3 sm:px-4 py-2 flex items-center gap-2 text-xs sm:text-sm">
+            <span className="text-gray-400">Total:</span>
             <span className="text-white font-medium">{inquiries.length}</span>
           </div>
           {newCount > 0 && (
-            <div className="bg-gold/10 border border-gold/30 rounded-lg px-4 py-2 flex items-center gap-2">
-              <span className="text-sm text-gold">New:</span>
+            <div className="bg-gold/10 border border-gold/30 rounded-lg px-3 sm:px-4 py-2 flex items-center gap-2 text-xs sm:text-sm">
+              <span className="text-gold">New:</span>
               <span className="text-gold font-medium">{newCount}</span>
             </div>
           )}
@@ -96,10 +96,10 @@ export function Inquiries() {
       </div>
 
       {/* Status Filter */}
-      <div className="flex gap-2 flex-wrap">
+      <div className="flex gap-2 flex-wrap text-sm">
         <button
           onClick={() => setFilterStatus('all')}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+          className={`px-3 sm:px-4 py-2 rounded-lg font-medium transition-colors text-xs sm:text-sm ${
             filterStatus === 'all'
               ? 'bg-gold text-dark'
               : 'bg-dark-lighter border border-white/10 text-gray-400 hover:text-white'
@@ -109,7 +109,7 @@ export function Inquiries() {
         </button>
         <button
           onClick={() => setFilterStatus('new')}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+          className={`px-3 sm:px-4 py-2 rounded-lg font-medium transition-colors text-xs sm:text-sm ${
             filterStatus === 'new'
               ? 'bg-gold text-dark'
               : 'bg-dark-lighter border border-white/10 text-gray-400 hover:text-white'
@@ -119,7 +119,7 @@ export function Inquiries() {
         </button>
         <button
           onClick={() => setFilterStatus('resolved')}
-          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+          className={`px-3 sm:px-4 py-2 rounded-lg font-medium transition-colors text-xs sm:text-sm ${
             filterStatus === 'resolved'
               ? 'bg-gold text-dark'
               : 'bg-dark-lighter border border-white/10 text-gray-400 hover:text-white'
@@ -138,79 +138,77 @@ export function Inquiries() {
         <div className="grid grid-cols-1 gap-4">
           {filteredInquiries.length > 0 ? (
             filteredInquiries.map((inquiry) => (
-              <div 
-                key={inquiry.id} 
-                className={`bg-dark-lighter border rounded-2xl p-6 transition-colors ${
-                  inquiry.status === 'new' ? 'border-gold/30 bg-gold/5' : 'border-white/5'
-                }`}
-              >
-                <div className="flex flex-col md:flex-row justify-between gap-6">
-                  <div className="flex-1 space-y-4">
-                    <div className="flex items-start justify-between">
+                <div 
+                  key={inquiry.id}
+                  className={`bg-dark-lighter border rounded-2xl p-4 sm:p-6 transition-colors ${
+                    inquiry.status === 'new' ? 'border-gold/30 bg-gold/5' : 'border-white/5'
+                  }`}
+                >
+                  <div className="flex flex-col md:flex-row justify-between gap-4 sm:gap-6">
+                    <div className="flex-1 space-y-3 sm:space-y-4">
                       <div>
-                        <h3 className="text-lg font-medium text-white flex items-center gap-3">
-                          {inquiry.name}
+                        <h3 className="text-base sm:text-lg font-medium text-white flex items-center gap-2 sm:gap-3">
+                          <span className="truncate">{inquiry.name}</span>
                           {inquiry.status === 'new' && (
-                            <span className="bg-gold text-dark text-xs px-2 py-0.5 rounded-full font-bold">NEW</span>
+                            <span className="bg-gold text-dark text-xs px-2 py-0.5 rounded-full font-bold shrink-0">NEW</span>
                           )}
                           {inquiry.status === 'resolved' && (
-                            <span className="bg-green-500/20 text-green-400 text-xs px-2 py-0.5 rounded-full font-bold">✓ RESOLVED</span>
+                            <span className="bg-green-500/20 text-green-400 text-xs px-2 py-0.5 rounded-full font-bold shrink-0">✓</span>
                           )}
                         </h3>
                       </div>
-                    </div>
 
-                    <p className="text-gray-300 leading-relaxed bg-dark p-4 rounded-xl border border-white/5">
+                      <p className="text-sm sm:text-base text-gray-300 leading-relaxed bg-dark p-3 sm:p-4 rounded-xl border border-white/5 line-clamp-4">
                       {inquiry.message}
                     </p>
 
-                    <div className="flex flex-wrap items-center gap-6 text-sm text-gray-400">
-                      <div className="flex items-center gap-2">
-                        <Mail className="w-4 h-4 text-gold" />
-                        <a href={`mailto:${inquiry.email}`} className="hover:text-white transition-colors">
+                    <div className="flex flex-wrap items-center gap-2 sm:gap-6 text-xs sm:text-sm text-gray-400">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Mail className="w-4 h-4 text-gold shrink-0" />
+                        <a href={`mailto:${inquiry.email}`} className="hover:text-white transition-colors truncate">
                           {inquiry.email}
                         </a>
                       </div>
                       {inquiry.phone && (
-                        <div className="flex items-center gap-2">
-                          <Phone className="w-4 h-4 text-gold" />
-                          <a href={`tel:${inquiry.phone}`} className="hover:text-white transition-colors">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Phone className="w-4 h-4 text-gold shrink-0" />
+                          <a href={`tel:${inquiry.phone}`} className="hover:text-white transition-colors truncate">
                             {inquiry.phone}
                           </a>
                         </div>
                       )}
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4 text-gold" />
-                        <span>{new Date(inquiry.created_at).toLocaleString()}</span>
+                      <div className="flex items-center gap-2 whitespace-nowrap">
+                        <Calendar className="w-4 h-4 text-gold shrink-0" />
+                        <span>{new Date(inquiry.created_at).toLocaleDateString()}</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="flex md:flex-col justify-end gap-2 shrink-0">
+                  <div className="flex flex-wrap md:flex-col justify-end gap-2 shrink-0 pt-3 md:pt-0 border-t md:border-t-0 md:border-l border-white/5 md:pl-4">
                     {inquiry.status === 'new' && (
                       <button 
                         onClick={() => handleStatusChange(inquiry.id, 'resolved')}
-                        className="p-3 bg-dark hover:bg-green-500/10 rounded-xl text-gray-400 hover:text-green-400 transition-colors"
+                        className="flex-1 md:flex-none p-2 sm:p-3 bg-dark hover:bg-green-500/10 rounded-lg sm:rounded-xl text-gray-400 hover:text-green-400 transition-colors text-xs sm:text-sm font-medium"
                         title="Mark as resolved"
                       >
-                        <CheckCircle className="w-5 h-5" />
+                        <CheckCircle className="w-4 sm:w-5 h-4 sm:h-5 mx-auto" />
                       </button>
                     )}
                     {inquiry.status === 'resolved' && (
                       <button 
                         onClick={() => handleStatusChange(inquiry.id, 'new')}
-                        className="p-3 bg-dark hover:bg-gold/10 rounded-xl text-gray-400 hover:text-gold transition-colors"
+                        className="flex-1 md:flex-none p-2 sm:p-3 bg-dark hover:bg-gold/10 rounded-lg sm:rounded-xl text-gray-400 hover:text-gold transition-colors text-xs sm:text-sm font-medium"
                         title="Mark as new"
                       >
-                        <AlertCircle className="w-5 h-5" />
+                        <AlertCircle className="w-4 sm:w-5 h-4 sm:h-5 mx-auto" />
                       </button>
                     )}
                     <button 
                       onClick={() => handleDelete(inquiry.id)}
-                      className="p-3 bg-dark hover:bg-red-500/10 rounded-xl text-gray-400 hover:text-red-400 transition-colors"
+                      className="flex-1 md:flex-none p-2 sm:p-3 bg-dark hover:bg-red-500/10 rounded-lg sm:rounded-xl text-gray-400 hover:text-red-400 transition-colors text-xs sm:text-sm font-medium"
                       title="Delete inquiry"
                     >
-                      <Trash2 className="w-5 h-5" />
+                      <Trash2 className="w-4 sm:w-5 h-4 sm:h-5 mx-auto" />
                     </button>
                   </div>
                 </div>

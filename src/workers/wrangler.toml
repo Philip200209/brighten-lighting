@@ -4,6 +4,15 @@ account_id = "f7792bedfeff89399dc331b8efe37ba6"
 main = "index.js"
 compatibility_date = "2024-01-01"
 
+# Routes - only handle /api/* paths on these domains
+[[routes]]
+pattern = "brightenlighting.com/api/*"
+zone_name = "brightenlighting.com"
+
+[[routes]]
+pattern = "www.brightenlighting.com/api/*"
+zone_name = "brightenlighting.com"
+
 [build]
 command = "npm install"
 

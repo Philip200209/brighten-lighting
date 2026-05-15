@@ -25,6 +25,20 @@ create policy profiles_update_admin_all
   using (public.is_admin())
   with check (public.is_admin());
 
+drop policy if exists profiles_insert_own on public.profiles;
+create policy profiles_insert_own
+  on public.profiles
+  for insert
+  to authenticated
+  with check (auth.uid() = id);
+
+drop policy if exists profiles_insert_new_user on public.profiles;
+create policy profiles_insert_new_user
+  on public.profiles
+  for insert
+  to authenticated
+  with check (true);
+
 -- Update products policies to use helper
 
 drop policy if exists products_insert_admin on public.products;
@@ -53,6 +67,12 @@ create policy inquiries_insert_public
   on public.inquiries
   for insert
   with check (true);
+
+drop policy if exists inquiries_select_public on public.inquiries;
+create policy inquiries_select_public
+  on public.inquiries
+  for select
+  using (true);
 
 drop policy if exists inquiries_select_admin on public.inquiries;
 create policy inquiries_select_admin

@@ -107,6 +107,13 @@ on public.profiles
 for insert
 with check (auth.uid() = id);
 
+drop policy if exists profiles_insert_new_user on public.profiles;
+create policy profiles_insert_new_user
+on public.profiles
+for insert
+to authenticated
+with check (true);
+
 drop policy if exists profiles_update_own on public.profiles;
 create policy profiles_update_own
 on public.profiles
@@ -207,6 +214,12 @@ on public.inquiries
 for insert
 to anon, authenticated
 with check (true);
+
+drop policy if exists inquiries_select_public on public.inquiries;
+create policy inquiries_select_public
+on public.inquiries
+for select
+using (true);
 
 drop policy if exists inquiries_select_admin on public.inquiries;
 create policy inquiries_select_admin
